@@ -126,7 +126,7 @@ Detalhes internos do provider (instância terminada, volume, etc.) não precisam
 
 1. Control Plane valida permissão (admin)
 2. Valida pré-condições: estado `stopped`, ou `error` sem runtime ativo; aplica mutex (falha se já houver ciclo ativo)
-3. Estado → `starting` (escrita condicional no `StateStore`)
+3. Estado → `starting`
 4. Resolve `GameAdapter` + configurações persistidas; obtém `bootstrapPlan` e `savePaths`
 5. `ServerProvider` sobe o runtime (EC2 `RunInstances` com user-data derivado do `bootstrapPlan`)
 6. Bootstrap na instância: restore dos `savePaths` via `SaveStorage` + start do processo do jogo
@@ -192,8 +192,9 @@ O canal de supervisão é interno ao adapter. No Minecraft, `GameSession` usa **
 Operações de ciclo de vida (start/stop) demoram mais que o timeout síncrono de uma interação do Discord. O Control Plane:
 
 - Responde com **deferred reply** e atualiza o resultado via **follow-up** / edição da mensagem
-- Usa **escrita condicional** (ou lock equivalente) no `StateStore` para o mutex global: dois `/start` concorrentes não devem ambos entrar em `starting`
-- Ignora ou rejeita com mensagem clara comandos incompatíveis com o estado atual (ex.: `/start` durante `starting` / `running`)
+- Rejeita com mensagem clara comandos incompatíveis com o estado atual (ex.: `/start` durante `starting` / `running`)
+
+Proteção extra contra corridas raras no `StateStore` fica a critério da implementação — não é requisito de desenho neste momento.
 
 ## Conexão dos jogadores
 
