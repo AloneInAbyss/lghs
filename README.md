@@ -2,7 +2,9 @@
 
 **LGHS** (*Leonhart's Game Hosting System*) é um sistema para controlar servidores dedicados de jogos via Discord.
 
-A pasta [`docs/`](docs/) contém os documentos em detalhes do projeto.
+Para humanos 🥸: confira nos [/docs](#docs) toda a definição do produto.
+
+Para agentes de IA 🤖: confira instruções no arquivo [`AGENTS.md`](AGENTS.md).
 
 ## Docs
 
