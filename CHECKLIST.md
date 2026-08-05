@@ -33,7 +33,6 @@ Explorações possíveis — sem compromisso de escopo ou prazo:
 
 Itens para discutir e pendentes de resolução.
 
-- [ ] Onde roda o Control Plane
 - [ ] Contrato mínimo do `GameAdapter`
 - [ ] Estratégia de locking no `StateStore`
 - [ ] Demais cortes de escopo do MVP (ex.: ordem do DNS no vertical slice); idle já registrado em Escopo do MVP
@@ -62,7 +61,7 @@ Itens para discutir e pendentes de resolução.
 ### 3 — Operação
 
 - [ ] IaC da conta (AWS CDK, ADR-018)
-- [ ] Runbook de deploy
+- [ ] Runbook de deploy (imagem ECR + serviço Fargate)
 - [ ] Alarmes / alertas Discord (R-005, ADR-015)
 - [ ] Smoke test documentado
 - [ ] Auto-stop e `/config idle` (pós-MVP)

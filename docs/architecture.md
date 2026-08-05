@@ -28,6 +28,7 @@ flowchart LR
 ### Control Plane
 
 - Processo **sempre ligado**, escrito em **TypeScript + Node**
+- Hospedado na AWS como **ECS Fargate**
 - Responsabilidades:
   - Registrar e tratar slash commands do Discord
   - Aplicar permissões (Admin vs usuário comum)
@@ -39,7 +40,7 @@ flowchart LR
 
 ### Game Server
 
-- Sobe sob demanda via `ServerProvider` (na AWS: **EC2 On-Demand**, ADR-017)
+- Sobe sob demanda via `ServerProvider` (na AWS: **EC2 On-Demand**)
 - Desliga no `/stop` ou no auto-stop com **terminate** da instância (após upload do save)
 - Disco da instância é tratado como efêmero; saves e configs sobem através do `SaveStorage`
 - Bootstrap na criação via **user-data**; operação na VM via **SSM** (sem SSH público)
@@ -71,10 +72,10 @@ Implementações específicas visando facilitar uma eventual migração para out
 
 ## Separação de recursos
 
-- Control Plane e Game Server rodam como **recursos separados** na mesma conta/região AWS
+- Control Plane e Game Server rodam como **recursos separados** na mesma conta/região AWS: **Fargate** (Control Plane) vs **EC2** (Game Server)
 - O Game Server compõe a maior partes dos custos de infra, mas que pode ser amenizado através da função de auto-stop
 - Control Plane deverá ser pequeno, mas contínuo, para aceitar comandos e supervisionar o sistema
-- A conta AWS é provisionada via **AWS CDK (TypeScript)**; o *onde* o Control Plane roda será detalhado quando essa decisão for fechada
+- A conta AWS é provisionada via **AWS CDK (TypeScript)**, incluindo o serviço Fargate do Control Plane
 
 ## Segurança
 
@@ -161,7 +162,7 @@ O restore não pode ocorrer antes do passo 5: não há disco/alvo de cópia enqu
 
 Health, presença de jogadores e flush seguro são responsabilidade do **GameAdapter** — o canal varia por jogo.
 
-No adapter Minecraft (ADR-016), o Control Plane usa **polling RCON** para health, listagem de jogadores e comandos de save/flush. Outros adapters podem usar outro mecanismo sem alterar o núcleo.
+No adapter Minecraft, o Control Plane usa **polling RCON** para health, listagem de jogadores e comandos de save/flush. Outros adapters podem usar outro mecanismo sem alterar o núcleo.
 
 ## Concorrência e Discord
 

@@ -57,7 +57,7 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 ## ADR-009 — Control Plane e Game Server em recursos separados
 
 - **Status:** Aceita
-- **Decisão:** Mesma conta/região no provedor cloud; processos/recursos distintos.
+- **Decisão:** Mesma conta/região no provedor cloud; processos/recursos distintos. Forma concreta: Control Plane em Fargate (ADR-019), Game Server em EC2 (ADR-017).
 - **Consequências:** Game Server pode morrer/ser destruído sem derrubar o bot; scaling de custo fica no jogo.
 
 ## ADR-010 — Estado em DynamoDB via port `StateStore`
@@ -117,6 +117,13 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 ## ADR-018 — Infraestrutura como código com AWS CDK (TypeScript)
 
 - **Status:** Aceita
-- **Contexto:** A conta AWS precisa ser reproduzível para self-host (DynamoDB, S3, Route 53, IAM, security groups, EC2 do Game Server, Control Plane, alarmes). O Control Plane já é TypeScript/Node (ADR-013); o runtime do jogo é EC2 (ADR-017). Terraform seria sólido, mas introduz HCL e fluxo de state à parte.
+- **Contexto:** A conta AWS precisa ser reproduzível para self-host (DynamoDB, S3, Route 53, IAM, security groups, EC2 do Game Server, Control Plane, alarmes). O Control Plane já é TypeScript/Node (ADR-013) com ECS Fargate (ADR-019); o runtime do jogo é EC2 (ADR-017). Terraform seria sólido, mas introduz HCL e fluxo de state à parte.
 - **Decisão:** Usar **AWS CDK em TypeScript** para declarar e publicar a infraestrutura (sintetiza CloudFormation). App de infra versionada no repositório (ex.: `infra/` ou equivalente). Secrets fora do código (Parameter Store / Secrets Manager).
-- **Consequências:** Um único ecossistema de linguagem no repo; onboarding de deploy = Node + credenciais AWS + CDK CLI. A escolha é AWS-first (alinhada ao produto); troca de cloud no futuro exigiria outra camada de IaC, sem invalidar ports/adapters do núcleo. O *onde* o Control Plane roda continua pendente e será modelado no CDK quando fechado.
+- **Consequências:** Um único ecossistema de linguagem no repo; onboarding de deploy = Node + credenciais AWS + CDK CLI. A escolha é AWS-first (alinhada ao produto); troca de cloud no futuro exigiria outra camada de IaC, sem invalidar ports/adapters do núcleo.
+
+## ADR-019 — Control Plane em ECS Fargate
+
+- **Status:** Aceita
+- **Contexto:** O Control Plane precisa estar sempre ligado (comandos Discord, orquestração, supervisão RCON), separado do Game Server (ADR-009), com custo fixo baixo e restart automático (R-005). Lambda não serve bem a um bot/supervisor de longa duração; EC2 dedicada funciona, mas acrescenta operação de SO sem necessidade.
+- **Decisão:** Rodar o Control Plane como **serviço ECS em Fargate** com **uma task** (`desiredCount = 1`), imagem container do app Node, mesma VPC/região do Game Server. Sem load balancer público no MVP (tráfego Discord é outbound). Logs em CloudWatch; secrets em Parameter Store / Secrets Manager. Security group da task é a origem permitida na porta RCON da EC2 do jogo (ADR-017).
+- **Consequências:** Custo fixo 24/7 da task (esperado); pico de custo continua na EC2 do jogo. CDK modela cluster, task definition, service e ECR (ADR-018). Alarmes de task/serviço caídas alimentam o caminho Discord (ADR-015). Tamanho da task (CPU/memória) e pipeline de build/push da imagem são detalhes de implementação/operação.

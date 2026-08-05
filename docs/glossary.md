@@ -5,7 +5,9 @@ Termos usados na documentação e no código do LGHS.
 | Termo | Definição |
 | --- | --- |
 | **LGHS** | *Leonhart's Game Hosting System* — o produto/sistema como um todo |
-| **Control Plane** | Processo orquestrador, sempre ligado, que ouve o Discord, aplica permissões, controla ciclo de vida, auto-stop, DNS, etc. Não é o processo do jogo |
+| **Control Plane** | Processo orquestrador, sempre ligado, que ouve o Discord, aplica permissões, controla ciclo de vida, auto-stop, DNS, etc. Não é o processo do jogo. |
+| **Fargate** | Modo de ECS em que a AWS gerencia o compute do container |
+| **ECS** | Elastic Container Service — orquestra containers na AWS |
 | **Game Server** | Instância de runtime onde o jogo dedicado de fato roda (sob demanda) |
 | **Catálogo** | Lista fechada de jogos suportados; cada entrada tem um GameAdapter |
 | **GameAdapter** | Adapter que conhece um jogo específico: como instalar/iniciar/parar, portas, saves, healthcheck, configs |
