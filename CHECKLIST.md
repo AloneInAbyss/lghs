@@ -33,7 +33,6 @@ Explorações possíveis — sem compromisso de escopo ou prazo:
 
 Itens para discutir e pendentes de resolução.
 
-- [ ] Forma do runtime AWS (EC2, ECS, Spot, etc.)
 - [ ] IaC (CDK vs Terraform)
 - [ ] Onde roda o Control Plane
 - [ ] Contrato mínimo do `GameAdapter`
@@ -55,7 +54,7 @@ Itens para discutir e pendentes de resolução.
 
 - [ ] `StateStore` (DynamoDB) + máquina de estados
 - [ ] Discord bot com deferred reply / follow-up + ACL por role
-- [ ] `ServerProvider` mínimo (subir/derrubar runtime)
+- [ ] `ServerProvider` mínimo (EC2 RunInstances / TerminateInstances)
 - [ ] Minecraft adapter (start/stop/health + paths de save; RCON)
 - [ ] `SaveStorage` no start/stop
 - [ ] `DnsProvider` (após o caminho feliz básico, se cortado no escopo do MVP)

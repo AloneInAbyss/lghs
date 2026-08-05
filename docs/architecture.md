@@ -17,7 +17,7 @@ flowchart LR
   CP --> Dns[DnsProviderPort]
   CP --> Games[GameAdapterPort]
   State --> DDB[DynamoDBAdapter]
-  Provider --> AWS[AWSAdapter]
+  Provider --> EC2[EC2Adapter]
   Saves --> S3[S3Adapter]
   Dns --> R53[Route53Adapter]
   Games --> MC[MinecraftAdapter]
@@ -39,9 +39,10 @@ flowchart LR
 
 ### Game Server
 
-- Sobe sob demanda via `ServerProvider`
-- Desliga no `/stop` ou no auto-stop
+- Sobe sob demanda via `ServerProvider` (na AWS: **EC2 On-Demand**, ADR-017)
+- Desliga no `/stop` ou no auto-stop com **terminate** da instância (após upload do save)
 - Disco da instância é tratado como efêmero; saves e configs sobem através do `SaveStorage`
+- Bootstrap na criação via **user-data**; operação na VM via **SSM** (sem SSH público)
 
 ### Ports
 
@@ -59,14 +60,14 @@ Foi escolhida uma arquitetura hexagonal nas fronteiras: não tratamos diretament
 
 Implementações específicas visando facilitar uma eventual migração para outro fornecedor.
 
-| Port             | Adapter                |
-| ---------------- | ---------------------- |
-| `ServerProvider` | AWS                    |
-| `StateStore`     | DynamoDB               |
-| `SaveStorage`    | S3                     |
-| `DnsProvider`    | Route 53               |
-| `GameAdapter`    | Minecraft Java         |
-| Interface        | Discord slash commands |
+| Port             | Adapter                         |
+| ---------------- | ------------------------------- |
+| `ServerProvider` | AWS (EC2 On-Demand)             |
+| `StateStore`     | DynamoDB                        |
+| `SaveStorage`    | S3                              |
+| `DnsProvider`    | Route 53                        |
+| `GameAdapter`    | Minecraft Java                  |
+| Interface        | Discord slash commands          |
 
 ## Separação de recursos
 
@@ -125,14 +126,16 @@ Detalhes internos do provider (instância terminada, volume, etc.) não precisam
 2. Valida pré-condições: estado `stopped`, ou `error` sem runtime ativo; aplica mutex (falha se já houver ciclo ativo)
 3. Estado → `starting` (escrita condicional no `StateStore`)
 4. Resolve GameAdapter + configurações persistidas
-5. `ServerProvider` sobe o runtime
+5. `ServerProvider` sobe o runtime (EC2 `RunInstances` com user-data)
 6. Restaura save/configs do `SaveStorage` **na instância**
-7. GameAdapter inicia o processo do jogo
+7. GameAdapter inicia o processo do jogo (se ainda não iniciado pelo bootstrap)
 8. Aguarda health do adapter
 9. `DnsProvider` atualiza o hostname (Route 53) para o IP público do Game Server
 10. Persiste estado (jogo, IP, hostname, iniciado em, etc.) e estado → `running`
 11. Responde no Discord com endereço de conexão e status
 12. Em falha: estado → `error` e mensagem no Discord
+
+O restore não pode ocorrer antes do passo 5: não há disco/alvo de cópia enquanto o runtime não existir.
 
 ### Stop
 
@@ -142,7 +145,7 @@ Detalhes internos do provider (instância terminada, volume, etc.) não precisam
 2. Estado → `stopping`
 3. Encerrar processo do jogo de forma ordenada (quando houver runtime)
 4. Upload do save e configs através do `SaveStorage`
-5. `ServerProvider` destrói/para o runtime
+5. `ServerProvider` termina o runtime (EC2 `TerminateInstances`)
 6. Estado → `stopped`
 7. Em falha: estado → `error`
 

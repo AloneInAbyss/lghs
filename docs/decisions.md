@@ -76,7 +76,7 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 ## ADR-012 — Providers desacoplados através de Ports & Adapters
 
 - **Status:** Aceita
-- **Decisão:** Port `ServerProvider` na versão inicial com adapter AWS; posteriormente podendo ser adaptado para outros fornecedores.
+- **Decisão:** Port `ServerProvider` na versão inicial com adapter AWS; posteriormente podendo ser adaptado para outros fornecedores. Forma inicial do runtime: ADR-017.
 - **Consequências:** Núcleo não pode depender de SDK AWS para regras de negócio; arquitetura hexagonal nas fronteiras.
 
 ## ADR-013 — Stack TypeScript + Node
@@ -105,3 +105,11 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Contexto:** O catálogo é fechado (ADR-003); o primeiro adapter precisa de defaults claros para implementação e supervisão.
 - **Decisão:** Minecraft **Java Vanilla**, versão mais recente estável; `online-mode=false`; sem whitelist; sem senha; porta `25565`; mundo na pasta do `level-name` (padrão `world/` na raiz do servidor). Supervisão via **polling RCON** (health, presença de jogadores, flush/save). Outros jogos podem usar outro canal no próprio adapter.
 - **Consequências:** R-001 fica conscientemente aceito neste adapter inicial; endurecer auth fica para depois. O núcleo continua agnóstico ao RCON — só o Minecraft adapter conhece o protocolo.
+
+## ADR-017 — Runtime do Game Server em EC2 On-Demand
+
+- **Status:** Aceita
+- **Contexto:** O `ServerProvider` precisa materializar um único Game Server sob demanda (ADR-004, ADR-012), com IP público, disco efêmero, restore/upload via `SaveStorage` e supervisão RCON (ADR-016). Alternativas (Spot, ECS, Fargate, Lightsail) foram descartadas para o MVP: Spot pode interromper a sessão; containers acrescentam complexidade sem benefício com mutex = 1.
+- **Decisão:** Adapter AWS do `ServerProvider` usa **EC2 On-Demand**. Ciclo de vida: **`RunInstances` no start** e **`TerminateInstances` no stop** (após flush e upload do save). Bootstrap da instância via **user-data** (Java, jar, restore do S3, start do processo). Canal operacional na VM via **SSM** (sem SSH público). Security group: porta do jogo acessível aos jogadores; RCON restrito ao Control Plane.
+- **Consequências:** Cold start na ordem de minutos (Discord deferred/follow-up). IP muda a cada create (DNS, ADR-007/014). Compute parado zera com terminate; verdade do mundo permanece no S3. Stop/Start com EBS ou Spot ficam como otimizações futuras, não como contrato do MVP.
+- **Nota (jogos pesados):** O ciclo terminate + disco efêmero implica bootstrap a cada start. Para jogos pequenos o user-data basta. Em adapters com install grande (dezenas de GB), preferir **AMI** com os binários pré-instalados e manter no S3 sobretudo saves/configs — ou Stop/Start com EBS — em vez de baixar o jogo inteiro a cada `RunInstances`.

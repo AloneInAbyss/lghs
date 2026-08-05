@@ -10,7 +10,9 @@ Termos usados na documentação e no código do LGHS.
 | **Catálogo** | Lista fechada de jogos suportados; cada entrada tem um GameAdapter |
 | **GameAdapter** | Adapter que conhece um jogo específico: como instalar/iniciar/parar, portas, saves, healthcheck, configs |
 | **ServerProvider** (port) | Abstração para criar/iniciar/parar/redimensionar/obter status e IP do runtime de hospedagem |
-| **AWS Adapter** | Implementação do ServerProvider na AWS |
+| **EC2 Adapter** | Implementação do ServerProvider na AWS via EC2 On-Demand (ADR-017) |
+| **User-data** | Script de bootstrap injetado na criação da EC2 (cloud-init): prepara Java, save, jar e sobe o jogo |
+| **SSM** | AWS Systems Manager — canal operacional na instância sem SSH público |
 | **StateStore** (port) | Persistência do estado do sistema (servidor ligado?, configs, ACL, idle-timeout, metadados) |
 | **SaveStorage** (port) | Persistência de mundos/saves e configs do jogo entre sessões |
 | **DnsProvider** (port) | Abstração para atualizar o registro DNS do hostname de conexão |
