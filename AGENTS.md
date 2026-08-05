@@ -7,12 +7,13 @@ A **definição do produto** vive em [`docs/`](docs/). Este arquivo não a subst
 Em mudanças amplas, leia na ordem abaixo. Em edits locais e pequenos, leia só o doc relevante.
 
 1. [`README.md`](README.md)
-2. [`docs/product.md`](docs/product.md)
-3. [`docs/architecture.md`](docs/architecture.md)
-4. [`docs/commands.md`](docs/commands.md)
-5. [`docs/decisions.md`](docs/decisions.md)
-6. [`docs/risks.md`](docs/risks.md)
-7. [`docs/glossary.md`](docs/glossary.md)
+2. [`CHECKLIST.md`](CHECKLIST.md)
+3. [`docs/product.md`](docs/product.md)
+4. [`docs/architecture.md`](docs/architecture.md)
+5. [`docs/commands.md`](docs/commands.md)
+6. [`docs/decisions.md`](docs/decisions.md)
+7. [`docs/risks.md`](docs/risks.md)
+8. [`docs/glossary.md`](docs/glossary.md)
 
 ## Regras de engenharia
 

@@ -53,7 +53,7 @@ Foi escolhida uma arquitetura hexagonal nas fronteiras: não tratamos diretament
 | `StateStore` | Estado do sistema e configurações persistidas |
 | `SaveStorage` | Upload/download de saves e configs |
 | `DnsProvider` | Atualizar o registro DNS do hostname de conexão para o IP atual |
-| `GameAdapter` | Contrato por jogo: start hooks, paths de save, health, configs |
+| `GameAdapter` | Contrato por jogo: start hooks, paths de save, health, configs; canal de supervisão específico do jogo |
 
 ### Adapters
 
@@ -96,7 +96,7 @@ O estado fica no `StateStore` e é o que `/status` e as pré-condições dos com
 | --- | --- |
 | `stopped` | Sem Game Server ativo |
 | `starting` | Provisionando runtime, restaurando save/configs, health check e DNS |
-| `running` | Jogo saudável; idle-timeout conta a partir daqui |
+| `running` | Jogo saudável; a partir daqui o Control Plane pode supervisionar o GameServer |
 | `stopping` | Flush/save e derrubada do runtime em andamento |
 | `error` | Falha no ciclo; `/status` explica; recuperação via `/stop` (reconcilia) e novo `/start` |
 
@@ -121,17 +121,18 @@ Detalhes internos do provider (instância terminada, volume, etc.) não precisam
 
 ### Start
 
-1. Usuário admin executa `/start` (pré-condição: `stopped`, ou `error` sem runtime ativo)
-2. Estado → `starting`
-3. Control Plane valida permissão
+1. Control Plane valida permissão (admin)
+2. Valida pré-condições: estado `stopped`, ou `error` sem runtime ativo; aplica mutex (falha se já houver ciclo ativo)
+3. Estado → `starting` (escrita condicional no `StateStore`)
 4. Resolve GameAdapter + configurações persistidas
-5. Restaura save/configs atuais a partir de `SaveStorage`
-6. `ServerProvider` sobe o runtime
-7. Aguarda health do adapter
-8. `DnsProvider` atualiza o hostname (Route 53) para o IP público do Game Server
-9. Persiste estado (jogo, IP, hostname, iniciado em, etc.) e estado → `running`
-10. Responde no Discord com endereço de conexão e status
-11. Em falha: estado → `error` e mensagem no Discord
+5. `ServerProvider` sobe o runtime
+6. Restaura save/configs do `SaveStorage` **na instância**
+7. GameAdapter inicia o processo do jogo
+8. Aguarda health do adapter
+9. `DnsProvider` atualiza o hostname (Route 53) para o IP público do Game Server
+10. Persiste estado (jogo, IP, hostname, iniciado em, etc.) e estado → `running`
+11. Responde no Discord com endereço de conexão e status
+12. Em falha: estado → `error` e mensagem no Discord
 
 ### Stop
 
@@ -151,6 +152,20 @@ Detalhes internos do provider (instância terminada, volume, etc.) não precisam
 2. Ao atingir idle-timeout configurável → inicia fluxo de stop
 3. Idle-timeout ajustável via `/config idle <tempo>` e persistido no `StateStore`
 4. Se o valor configurado é zero, desativa o auto-stop
+
+## Supervisão do Game Server
+
+Health, presença de jogadores e flush seguro são responsabilidade do **GameAdapter** — o canal varia por jogo.
+
+No adapter Minecraft (ADR-016), o Control Plane usa **polling RCON** para health, listagem de jogadores e comandos de save/flush. Outros adapters podem usar outro mecanismo sem alterar o núcleo.
+
+## Concorrência e Discord
+
+Operações de ciclo de vida (start/stop) demoram mais que o timeout síncrono de uma interação do Discord. O Control Plane:
+
+- Responde com **deferred reply** e atualiza o resultado via **follow-up** / edição da mensagem
+- Usa **escrita condicional** (ou lock equivalente) no `StateStore` para o mutex global: dois `/start` concorrentes não devem ambos entrar em `starting`
+- Ignora ou rejeita com mensagem clara comandos incompatíveis com o estado atual (ex.: `/start` durante `starting` / `running`)
 
 ## Conexão dos jogadores
 

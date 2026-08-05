@@ -41,7 +41,7 @@ Lista de riscos conhecidos e mitigações importantes para a integridade do sist
   - Utilizar arquivo de instrução para agentes de IA com boas práticas de segurança
 - **Status:** Aceito (ADR-001, ADR-002)
 
-## R-007 — Dependência do Control Plane contínuo
+## R-005 — Dependência do Control Plane contínuo
 
 - **Descrição:** Se o Control Plane cair, comandos e integrações param (mas o Game Server pode continuar ligado).
 - **Impacto:** Custo sem supervisão; impossibilidade de `/stop` via Discord até recuperação; fluxo de save não ocorre.

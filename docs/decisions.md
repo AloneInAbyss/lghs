@@ -95,6 +95,13 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 ## ADR-015 — Observabilidade com CloudWatch e alertas no Discord
 
 - **Status:** Aceita
-- **Contexto:** Se o Control Plane cair, o Game Server pode continuar ligado sem auto-stop nem comandos (R-007).
+- **Contexto:** Se o Control Plane cair, o Game Server pode continuar ligado sem auto-stop nem comandos (R-005).
 - **Decisão:** CloudWatch Logs + CloudWatch Alarms; notificações exclusivamente no **Discord**. Para alarmes com Control Plane indisponível, um caminho mínimo (Lambda → webhook) posta no Discord.
 - **Consequências:** Operação permanece na AWS + Discord; self-hosters configuram canal/webhook de alerta na instalação.
+
+## ADR-016 — Primeiro Adapter - Minecraft Java Vanilla
+
+- **Status:** Aceita
+- **Contexto:** O catálogo é fechado (ADR-003); o primeiro adapter precisa de defaults claros para implementação e supervisão.
+- **Decisão:** Minecraft **Java Vanilla**, versão mais recente estável; `online-mode=false`; sem whitelist; sem senha; porta `25565`; mundo na pasta do `level-name` (padrão `world/` na raiz do servidor). Supervisão via **polling RCON** (health, presença de jogadores, flush/save). Outros jogos podem usar outro canal no próprio adapter.
+- **Consequências:** R-001 fica conscientemente aceito neste adapter inicial; endurecer auth fica para depois. O núcleo continua agnóstico ao RCON — só o Minecraft adapter conhece o protocolo.
