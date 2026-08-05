@@ -34,7 +34,7 @@ Explorações possíveis — sem compromisso de escopo ou prazo:
 
 Itens para discutir e pendentes de resolução.
 
-- [ ] Reconsiderar o nível de acesso do comando `/start`, para permitir que usuários comuns possam iniciar o servidor
+- [ ] Reconsiderar o nível de acesso do comando `/start`, para permitir que usuários comuns possam iniciar o servidor. Uma opção é que cada jogo tenha uma role associada, que irá permitir que esse usuário inicie o servidor. Os comandos de /stop e /config ainda permanecem restritos.
 
 ## Trabalho por etapa
 
