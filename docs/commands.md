@@ -30,10 +30,6 @@ Documentação dos **Discord Slash Commands** do LGHS.
 | **Pré-condições** | Estado: `running` ou `error` |
 | **Observações** | Persiste save e configs antes de destruir/parar o runtime |
 
-#### Opções
-
-Nenhuma.
-
 ### `/status`
 
 | Campo | Conteúdo |
@@ -42,10 +38,6 @@ Nenhuma.
 | **Permissão** | Usuário comum |
 | **Pré-condições** | Nenhuma |
 | **Observações** | Disponível para qualquer usuário do servidor Discord |
-
-#### Opções
-
-Nenhuma.
 
 ### `/config idle <minutos>`
 
