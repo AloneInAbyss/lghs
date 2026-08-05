@@ -1,29 +1,8 @@
 # Comandos no Discord
 
-Documentação dos **Discord Slash Commands** do LGHS. Cada comando abaixo deve seguir o template; copie o bloco e preencha um por comando.
+Documentação dos **Discord Slash Commands** do LGHS.
 
 ---
-
-<!-- Template -->
-
-<!-- ### `/nome`
-
-| Campo | Conteúdo |
-| --- | --- |
-| **Descrição** | O que o comando faz, em uma frase |
-| **Permissão** | Admin / Usuário comum |
-| **Pré-condições** | Estado ou contexto necessário antes de executar (ex.: servidor parado) |
-| **Opções** | Ver tabela abaixo (ou “nenhuma”) |
-| **Comportamento** | Passos principais no Control Plane |
-| **Resposta de sucesso** | O que o Discord mostra quando dá certo |
-| **Erros esperados** | Falhas conhecidas e mensagem/comportamento |
-| **Observações** | Assíncrono? Ephemeral? Relação com outros comandos? | -->
-
-<!-- #### Opções
-
-| Nome | Tipo | Obrigatório | Descrição | Exemplo |
-| --- | --- | --- | --- | --- |
-| `…` | string / integer / … | sim / não | … | `…` | -->
 
 ## Comandos
 
