@@ -47,5 +47,6 @@ Lista de riscos conhecidos e mitigações importantes para a integridade do sist
 - **Impacto:** Custo sem supervisão; impossibilidade de `/stop` via Discord até recuperação; fluxo de save não ocorre.
 - **Mitigação:**
   - Restart automático do Control Plane
-  - Envio de alertas através de serviço de observabilidade
-- **Status:** Pendente (definir o serviço de observabilidade e como enviar alertas)
+  - CloudWatch Logs + Alarms
+  - Alertas no Discord através de caminho mínimo (Lambda → webhook)
+- **Status:** Aceito (ADR-015)

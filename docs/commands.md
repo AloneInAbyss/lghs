@@ -33,7 +33,7 @@ Documentação dos **Discord Slash Commands** do LGHS. Cada comando abaixo deve 
 | --- | --- |
 | **Descrição** | Inicia o servidor de um jogo |
 | **Permissão** | Admin |
-| **Pré-condições** | Estado do servidor: not-started, stopped ou destroyed |
+| **Pré-condições** | Estado: `stopped` (ou `error` sem runtime ativo) |
 | **Observações** | Caso não informe o game, utiliza o último selecionado |
 
 #### Opções
@@ -48,7 +48,7 @@ Documentação dos **Discord Slash Commands** do LGHS. Cada comando abaixo deve 
 | --- | --- |
 | **Descrição** | Encerra o Game Server ativo |
 | **Permissão** | Admin |
-| **Pré-condições** | Estado do servidor: running |
+| **Pré-condições** | Estado: `running` ou `error` |
 | **Observações** | Persiste save e configs antes de destruir/parar o runtime |
 
 #### Opções

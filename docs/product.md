@@ -31,6 +31,6 @@ O uso primário é para um servidor de Discord pequeno compartilhado entre amigo
 
 ## Modelo de distribuição
 
-- Código **open source**
+- Código **open source** sob licença **MIT**
 - Credenciais, tokens e contas de cloud são responsabilidade de quem hospeda
 - Qualquer pessoa pode replicar o sistema na própria comunidade

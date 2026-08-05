@@ -2,18 +2,18 @@
 
 **LGHS** (*Leonhart's Game Hosting System*) é um sistema para controlar servidores dedicados de jogos via Discord.
 
-A pasta **/docs** contém os documentos em detalhes do projeto.
+A pasta [`docs/`](docs/) contém os documentos em detalhes do projeto.
 
 ## Docs
 
-| Documento                           | Descrição                                         |
-| ----------------------------------- | ------------------------------------------------- |
-| [Produto](docs/product.md)          | Problema, proposta, público e princípios          |
-| [Arquitetura](docs/architecture.md) | Visão lógica, ports/adapters e fluxos principais  |
-| [Glossário](docs/glossary.md)       | Termos do domínio                                 |
-| [Riscos](docs/risks.md)             | Riscos analisados e mitigações                    |
-| [Decisões](docs/decisions.md)       | Decisões de arquitetura (ADRs)                    |
-| [Comandos](docs/commands.md)        | Documentação de cada comando do Discord           |
+| Documento | Descrição |
+| --- | --- |
+| [Produto](docs/product.md) | Problema, proposta, público |
+| [Arquitetura](docs/architecture.md) | Ports/adapters, estados, fluxos |
+| [Glossário](docs/glossary.md) | Termos do domínio |
+| [Riscos](docs/risks.md) | Riscos analisados e mitigações |
+| [Decisões](docs/decisions.md) | Decisões de arquitetura (ADRs) |
+| [Comandos](docs/commands.md) | Documentação de comandos do Discord |
 
 ## Comandos no Discord
 

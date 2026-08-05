@@ -8,11 +8,11 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Decisão:** LGHS é ferramenta self-host; uso primário para uma comunidade/Discord.
 - **Consequências:** Sem isolamento multi-tenant, billing por cliente ou painel SaaS. Permite que outros repliquem a instalação de forma independente.
 
-## ADR-002 — Distribuição open source
+## ADR-002 — Distribuição open source sob licença MIT
 
-- **Status:** Pendente de definição do ADR da licença
-- **Decisão:** Código público; terceiros podem fazer self-host.
-- **Consequências:** Nunca deixar secrets no repo/logs; documentação de setup necessária; recomendado definição da licença.
+- **Status:** Aceita
+- **Decisão:** Código público sob licença **MIT** (`LICENSE` na raiz); terceiros podem fazer self-host, modificar e redistribuir nos termos da MIT.
+- **Consequências:** Nunca deixar secrets no repo/logs; documentação de setup necessária; atribuição do copyright conforme a licença.
 
 ## ADR-003 — Catálogo fechado de jogos
 
@@ -91,3 +91,10 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Contexto:** O hostname de conexão precisa apontar para o IP do Game Server a cada start, sem acoplar DNS ao compute.
 - **Decisão:** Port `DnsProvider` com adapter Route 53; o Control Plane atualiza o registro após o health check do start.
 - **Consequências:** `ServerProvider` permanece focado em runtime; trocar de provedor DNS no futuro não exige reescrever o provider de compute.
+
+## ADR-015 — Observabilidade com CloudWatch e alertas no Discord
+
+- **Status:** Aceita
+- **Contexto:** Se o Control Plane cair, o Game Server pode continuar ligado sem auto-stop nem comandos (R-007).
+- **Decisão:** CloudWatch Logs + CloudWatch Alarms; notificações exclusivamente no **Discord**. Para alarmes com Control Plane indisponível, um caminho mínimo (Lambda → webhook) posta no Discord.
+- **Consequências:** Operação permanece na AWS + Discord; self-hosters configuram canal/webhook de alerta na instalação.

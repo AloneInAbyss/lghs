@@ -88,29 +88,62 @@ Comandos disponíveis para qualquer usuário:
 
 - /status
 
+## Estados do Game Server
+
+O estado fica no `StateStore` e é o que `/status` e as pré-condições dos comandos consultam:
+
+| Estado | Significado |
+| --- | --- |
+| `stopped` | Sem Game Server ativo |
+| `starting` | Provisionando runtime, restaurando save/configs, health check e DNS |
+| `running` | Jogo saudável; idle-timeout conta a partir daqui |
+| `stopping` | Flush/save e derrubada do runtime em andamento |
+| `error` | Falha no ciclo; `/status` explica; recuperação via `/stop` (reconcilia) e novo `/start` |
+
+Transições principais:
+
+```mermaid
+stateDiagram-v2
+  [*] --> stopped
+  stopped --> starting: /start
+  starting --> running: health_ok
+  starting --> error: falha
+  running --> stopping: /stop_ou_auto_stop
+  stopping --> stopped: ok
+  stopping --> error: falha
+  error --> stopping: /stop
+  error --> starting: /start_sem_runtime
+```
+
+Detalhes internos do provider (instância terminada, volume, etc.) não precisam aparecer como estados públicos separados.
+
 ## Fluxos principais
 
 ### Start
 
-1. Usuário admin executa `/start`
-2. Control Plane valida permissão
-3. Resolve GameAdapter + configurações persistidas
-4. Restaura save/configs atuais a partir de `SaveStorage`
-5. `ServerProvider` sobe o runtime
-6. Aguarda health do adapter
-7. `DnsProvider` atualiza o hostname (Route 53) para o IP público do Game Server
-8. Persiste estado (jogo, IP, hostname, iniciado em, etc.)
-9. Responde no Discord com endereço de conexão e status
+1. Usuário admin executa `/start` (pré-condição: `stopped`, ou `error` sem runtime ativo)
+2. Estado → `starting`
+3. Control Plane valida permissão
+4. Resolve GameAdapter + configurações persistidas
+5. Restaura save/configs atuais a partir de `SaveStorage`
+6. `ServerProvider` sobe o runtime
+7. Aguarda health do adapter
+8. `DnsProvider` atualiza o hostname (Route 53) para o IP público do Game Server
+9. Persiste estado (jogo, IP, hostname, iniciado em, etc.) e estado → `running`
+10. Responde no Discord com endereço de conexão e status
+11. Em falha: estado → `error` e mensagem no Discord
 
 ### Stop
 
 1. Executado em um dos seguintes casos:
-  a. Usuário admin executa `/stop`
-  b. Acionado pelo processo de auto-stop
-2. Encerrar processo do jogo de forma ordenada
-3. Upload do save e configs através do `SaveStorage`
-4. `ServerProvider` destrói/para o runtime
-5. Atualiza estado → *stopped*
+  a. Usuário admin executa `/stop` (pré-condição: `running` ou `error`)
+  b. Acionado pelo processo de auto-stop (a partir de `running`)
+2. Estado → `stopping`
+3. Encerrar processo do jogo de forma ordenada (quando houver runtime)
+4. Upload do save e configs através do `SaveStorage`
+5. `ServerProvider` destrói/para o runtime
+6. Estado → `stopped`
+7. Em falha: estado → `error`
 
 ### Auto-stop
 
@@ -123,3 +156,9 @@ Comandos disponíveis para qualquer usuário:
 
 - Endereço canônico = **hostname** gerenciado no Route 53 (+ porta do jogo)
 - O IP público do runtime é usado por baixo dos panos; no `/start` ele é publicado no DNS
+
+## Observabilidade
+
+- **Logs:** CloudWatch Logs (Control Plane; Game Server conforme necessidade do adapter)
+- **Alarmes:** CloudWatch Alarms (ex.: Control Plane sem heartbeat; Game Server ligado além de um limiar opcional)
+- **Alertas:** mensagens no Discord. Alarmes que disparam com o Control Plane caído usam um caminho mínimo com Lambda → webhook do Discord.

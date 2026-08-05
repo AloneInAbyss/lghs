@@ -16,6 +16,7 @@ Termos usados na documentação e no código do LGHS.
 | **DnsProvider** (port) | Abstração para atualizar o registro DNS do hostname de conexão |
 | **Route 53 Adapter** | Implementação do DnsProvider na AWS Route 53 |
 | **Hostname de conexão** | Endereço canônico usado para conexão |
+| **Estado do Game Server** | `stopped`, `starting`, `running`, `stopping`, ou `error` (ver [architecture.md](/docs/architecture.md)) |
 | **Idle-timeout** | Tempo sem jogadores após o qual o auto-stop é disparado; configurável via Discord |
 | **Auto-stop** | Encerramento automático do Game Server por ociosidade |
 | **Mutex global** | Regra de no máximo um Game Server ativo por instalação do LGHS |
