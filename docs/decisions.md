@@ -26,7 +26,7 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Status:** Aceita
 - **Contexto:** Para um servidor pequeno inicialmente não há necessidade de hospedar múltiplos jogos.
 - **Decisão:** No máximo uma instância de jogo ligada por instalação.
-- **Consequências:** Troca de jogo através de `/config`; custo e complexidade menores; `/start` falha com mensagem clara se já houver servidor ativo.
+- **Consequências:** Troca de jogo através de `/start [game]` (com o servidor parado); custo e complexidade menores; `/start` falha com mensagem clara se já houver servidor ativo.
 
 ## ADR-005 — Interface no Discord através de slash commands
 
@@ -39,19 +39,19 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 
 - **Status:** Aceita
 - **Decisão:** Admins no Discord controlam tudo e liberam acesso a outros usuários através de roles.
-- **Consequências:** Pouca granularidade no ACR; acesso atrelado diretamente à configuração do servidor no Discord.
+- **Consequências:** Pouca granularidade no ACL; acesso atrelado diretamente à configuração do servidor no Discord.
 
-## ADR-007 — Conexão por IP público
+## ADR-007 — Conexão por domínio
 
-- **Status:** A alterar
-- **Contexto:** DNS dinâmico com domínio melhora UX, mas adiciona peças.
-- **Decisão:** v1 informa IP público. Domínio fica para depois.
-- **Consequências:** IP pode mudar a cada start; jogadores precisam do IP atual via `/status` ou mensagem de start.
+- **Status:** Aceita
+- **Contexto:** IP público muda a cada start; um hostname estável facilita a conexão dos jogadores.
+- **Decisão:** O endereço canônico de conexão é um hostname gerenciado. No `/start`, após o Game Server ficar saudável, o Control Plane atualiza o registro DNS para o IP atual.
+- **Consequências:** Jogadores e `/status` usam o hostname; o IP continua existindo no runtime, mas não é a fonte da verdade da UX. Requer port `DnsProvider` (ADR-014).
 
 ## ADR-008 — Auto-stop por inatividade configurável
 
 - **Status:** Aceita
-- **Decisão:** Timeout configurável via Discord (`/config`), persistido.
+- **Decisão:** Timeout configurável via Discord (`/config idle`), persistido. Ao atingir o limite, o fluxo de stop inicia. Valor `0` desativa o auto-stop.
 - **Consequências:** Control Plane precisa supervisionar o Game Server enquanto ele estiver up.
 
 ## ADR-009 — Control Plane e Game Server em recursos separados
@@ -67,11 +67,11 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Decisão:** DynamoDB atrás de `StateStore`.
 - **Consequências:** No caso de mudanças futuras será necessário migrar o conteúdo já existente no DynamoDB.
 
-## ADR-011 — Saves e backups em S3 via port `SaveStorage`
+## ADR-011 — Saves e configs em S3 via port `SaveStorage`
 
 - **Status:** Aceita
-- **Decisão:** Persistência de saves entre starts; backups frequentes e com retenção; backup obrigatório antes do destroy do runtime.
-- **Consequências:** GameAdapter deve coordenar o backup seguro antes da cópia/upload.
+- **Decisão:** `SaveStorage` persiste saves e configs do jogo entre sessões. O upload ocorre no `/stop` e no auto-stop, antes de destruir/parar o runtime.
+- **Consequências:** GameAdapter deve coordenar flush/save seguro antes da cópia/upload.
 
 ## ADR-012 — Providers desacoplados através de Ports & Adapters
 
@@ -84,3 +84,10 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Status:** Aceita
 - **Decisão:** Control Plane em TypeScript/Node.
 - **Consequências:** Ecossistema Discord e AWS maduros; tipagem ajuda nos contratos dos ports.
+
+## ADR-014 — DNS via Route 53 e port `DnsProvider`
+
+- **Status:** Aceita
+- **Contexto:** O hostname de conexão precisa apontar para o IP do Game Server a cada start, sem acoplar DNS ao compute.
+- **Decisão:** Port `DnsProvider` com adapter Route 53; o Control Plane atualiza o registro após o health check do start.
+- **Consequências:** `ServerProvider` permanece focado em runtime; trocar de provedor DNS no futuro não exige reescrever o provider de compute.

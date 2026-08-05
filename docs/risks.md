@@ -10,7 +10,7 @@ Lista de riscos conhecidos e mitigações importantes para a integridade do sist
   - Auth por senha no jogo
   - Configuração de whitelist no jogo
   - No caso de nenhuma das opções acima ser possível, utilizar plugin ou mecanismo dentro do adapter
-- **Status:** Pendente (precisa alterar o ADR)
+- **Status:** Aceito (ADR-006, ADR-007)
 
 ## R-002 — Custo variável do Game Server
 
@@ -23,13 +23,13 @@ Lista de riscos conhecidos e mitigações importantes para a integridade do sist
   - predefinições do tamanho do servidor na hospedagem (small/medium/large)
 - **Status:** Aceito (ADR-004, ADR-008, ADR-009)
 
-## R-003 — Backup a quente e integridade de saves
+## R-003 — Cópia a quente e integridade de saves
 
-- **Descrição:** Backup durante execução pode corromper saves se o jogo não fizer flush adequado.
-- **Impacto:** Perda de dados e backups.
+- **Descrição:** Saves e configs sobem ao `SaveStorage` apenas no `/stop` e no auto-stop. Se o jogo não fizer flush adequado antes da cópia, o upload pode ficar inconsistente ou corrompido.
+- **Impacto:** Perda de progresso desde o último stop bem-sucedido; save inutilizável na próxima sessão.
 - **Mitigações:**
-  - GameAdapter deve coordenar procedimento seguro antes da cópia
-  - Backup obrigatório antes de interromper o runtime
+  - GameAdapter deve coordenar procedimento seguro de flush/save antes da cópia
+  - Upload obrigatório de save/configs antes de interromper o runtime
 - **Status:** Aceito (ADR-011)
 
 ## R-004 — Self-host open source e a gestão de secrets
@@ -43,8 +43,8 @@ Lista de riscos conhecidos e mitigações importantes para a integridade do sist
 
 ## R-007 — Dependência do Control Plane contínuo
 
-- **Descrição:** Se o Control Plane cair, comandos e auto-stop/save periódico param (o Game Server pode continuar ligado).
-- **Impacto:** Custo sem supervisão; impossibilidade de `/stop` via Discord até recuperação.
+- **Descrição:** Se o Control Plane cair, comandos e integrações param (mas o Game Server pode continuar ligado).
+- **Impacto:** Custo sem supervisão; impossibilidade de `/stop` via Discord até recuperação; fluxo de save não ocorre.
 - **Mitigação:**
   - Restart automático do Control Plane
   - Envio de alertas através de serviço de observabilidade

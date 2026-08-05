@@ -4,7 +4,7 @@ Este documento é uma visão lógica da arquitetura do sistema. Define os princi
 
 ## Visão geral
 
-O **Discord** é a interface pela qual um usuário (administrador ou comum) interage com o sistema. O centro do sistema está no **Control Plane**, que orquestra provider, states, saves e o adapter do jogo. O adapter é quem define o **Game Server** que ficará sob supervisão do Control Plane, porém totalmente independente.
+O **Discord** é a interface pela qual um usuário (administrador ou comum) interage com o sistema. O centro do sistema está no **Control Plane**, que orquestra provider, estado, saves, DNS e o adapter do jogo. O adapter é quem define o **Game Server** que ficará sob supervisão do Control Plane, porém totalmente independente.
 
 A arquitetura é construída de forma que os componentes sejam bem desacoplados, de maneira que se futuramente for necessário alterar o fornecedor de uma das partes do sistema para outro, a troca não exige uma reescrita total do sistema.
 
@@ -14,10 +14,12 @@ flowchart LR
   CP --> State[StateStorePort]
   CP --> Provider[ServerProviderPort]
   CP --> Saves[SaveStoragePort]
+  CP --> Dns[DnsProviderPort]
   CP --> Games[GameAdapterPort]
   State --> DDB[DynamoDBAdapter]
   Provider --> AWS[AWSAdapter]
   Saves --> S3[S3Adapter]
+  Dns --> R53[Route53Adapter]
   Games --> MC[MinecraftAdapter]
 ```
 
@@ -31,6 +33,7 @@ flowchart LR
   - Aplicar permissões (Admin vs usuário comum)
   - Garantir o **mutex global** (no máximo um Game Server ativo)
   - Orquestrar start/stop do Game Server
+  - Atualizar o DNS de conexão após o Game Server subir
   - Monitorar idle e executar auto-stop
   - Persistir e ler estado via `StateStore`
 
@@ -38,18 +41,19 @@ flowchart LR
 
 - Sobe sob demanda via `ServerProvider`
 - Desliga no `/stop` ou no auto-stop
-- Disco da instância deve ser tratado como secundário, portanto os dados do jogo são salvos periodicamente através do `SaveStorage`
+- Disco da instância é tratado como efêmero; saves e configs sobem através do `SaveStorage`
 
 ### Ports
 
 Foi escolhida uma arquitetura hexagonal nas fronteiras: não tratamos diretamente de implementações de fornecedores específicos (como EC2, Discord, S3) para as regras de negócio.
 
-| Port             | Responsabilidade                                                           |
-| ---------------- | -------------------------------------------------------------------------- |
-| `ServerProvider` | Provisionar/iniciar/parar runtime, expor status e endereço (IP/porta)      |
-| `StateStore`     | Estado do sistema e configurações persistidas                              |
-| `SaveStorage`    | Upload/download de saves e configs, listagem/retenção                      |
-| `GameAdapter`    | Contrato por jogo: start hooks, paths de save, health, configs específicas |
+| Port | Responsabilidade |
+| --- | --- |
+| `ServerProvider` | Provisionar/iniciar/parar runtime; expor status e endereço do runtime |
+| `StateStore` | Estado do sistema e configurações persistidas |
+| `SaveStorage` | Upload/download de saves e configs |
+| `DnsProvider` | Atualizar o registro DNS do hostname de conexão para o IP atual |
+| `GameAdapter` | Contrato por jogo: start hooks, paths de save, health, configs |
 
 ### Adapters
 
@@ -60,6 +64,7 @@ Implementações específicas visando facilitar uma eventual migração para out
 | `ServerProvider` | AWS                    |
 | `StateStore`     | DynamoDB               |
 | `SaveStorage`    | S3                     |
+| `DnsProvider`    | Route 53               |
 | `GameAdapter`    | Minecraft Java         |
 | Interface        | Discord slash commands |
 
@@ -90,22 +95,22 @@ Comandos disponíveis para qualquer usuário:
 1. Usuário admin executa `/start`
 2. Control Plane valida permissão
 3. Resolve GameAdapter + configurações persistidas
-4. Restaura save atual a partir de `SaveStorage`
+4. Restaura save/configs atuais a partir de `SaveStorage`
 5. `ServerProvider` sobe o runtime
 6. Aguarda health do adapter
-7. Persiste estado (jogo, IP, iniciado em, etc.)
-8. Responde no Discord com endereço de conexão e status
+7. `DnsProvider` atualiza o hostname (Route 53) para o IP público do Game Server
+8. Persiste estado (jogo, IP, hostname, iniciado em, etc.)
+9. Responde no Discord com endereço de conexão e status
 
 ### Stop
 
 1. Executado em um dos seguintes casos:
   a. Usuário admin executa `/stop`
   b. Acionado pelo processo de auto-stop
-2. Se for auto-stop: envia aviso no Discord
-3. Encerrar processo do jogo de forma ordenada
-4. Upload da cópia do save através do `SaveStorage`
-5. `ServerProvider` destrói/para o runtime
-6. Atualiza estado → *stopped*
+2. Encerrar processo do jogo de forma ordenada
+3. Upload do save e configs através do `SaveStorage`
+4. `ServerProvider` destrói/para o runtime
+5. Atualiza estado → *stopped*
 
 ### Auto-stop
 
@@ -116,4 +121,5 @@ Comandos disponíveis para qualquer usuário:
 
 ## Conexão dos jogadores
 
-- Endereço = **IP público** + porta do jogo
+- Endereço canônico = **hostname** gerenciado no Route 53 (+ porta do jogo)
+- O IP público do runtime é usado por baixo dos panos; no `/start` ele é publicado no DNS

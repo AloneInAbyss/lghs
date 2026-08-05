@@ -6,7 +6,7 @@
 
 ## Problema & Objetivo
 
-Hospedar servidores dedicados de jogos para um grupo de amigos exige, hoje, trabalho manual repetitivo: ligar a máquina, configurar recursos, abrir portas, lembrar o IP, cuidar de saves e backups, e desligar quando ninguém está jogando. Quando o grupo joga títulos diferentes, esse custo operacional se multiplica.
+Hospedar servidores dedicados de jogos para um grupo de amigos exige, hoje, trabalho manual repetitivo: ligar a máquina, configurar recursos, abrir portas, lembrar o IP, cuidar de saves e configs, e desligar quando ninguém está jogando. Quando o grupo joga títulos diferentes, esse custo operacional se multiplica.
 
 O objetivo do LGHS é **abstrair essa operação** para que o ciclo de vida do servidor seja controlado por comandos no Discord, sem que cada pessoa precise entender a infraestrutura.
 
@@ -14,7 +14,8 @@ O objetivo do LGHS é **abstrair essa operação** para que o ciclo de vida do s
 
 - Iniciar e encerrar um servidor de jogo por comandos no Discord
 - Indicar qual jogo do catálogo deve subir
-- Persistir mundos/saves e fazer backups sem intervenção manual constante
+- Persistir mundos/saves e configs do jogo entre sessões
+- Oferecer um hostname estável de conexão (domínio), sem de números de IP mutáveis
 - Desligar automaticamente quando o servidor estiver ocioso (economia de custo e recursos)
 - Disponibilizar o status, acesso e configurações do servidor por comandos no Discord
 

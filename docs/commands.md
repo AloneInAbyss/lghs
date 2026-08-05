@@ -49,7 +49,7 @@ Documentação dos **Discord Slash Commands** do LGHS. Cada comando abaixo deve 
 | **Descrição** | Encerra o Game Server ativo |
 | **Permissão** | Admin |
 | **Pré-condições** | Estado do servidor: running |
-| **Observações** | Faz backup do save antes de destruir/parar o runtime |
+| **Observações** | Persiste save e configs antes de destruir/parar o runtime |
 
 #### Opções
 
