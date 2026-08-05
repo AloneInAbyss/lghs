@@ -13,7 +13,7 @@ Itens essenciais para a versão inicial:
 - Subir e derrubar o runtime
 - Restore e upload de saves/configs
 - Health check via adapter (RCON)
-- DNS canônico na arquitetura alvo (pode vir depois do caminho feliz básico no vertical slice)
+- Endereço de conexão no `/status` via **IP** (e porta)
 
 ### Depois do MVP
 
@@ -21,6 +21,7 @@ Itens que permanecem na visão de produto, mas fora da primeira entrega:
 
 - Auto-stop por inatividade
 - `/config idle` (ADR-008)
+- DNS canônico automatizado (`DnsProvider` / Route 53; ADR-007, ADR-014)
 
 ### Ideias futuras
 
@@ -33,7 +34,6 @@ Explorações possíveis — sem compromisso de escopo ou prazo:
 
 Itens para discutir e pendentes de resolução.
 
-- [ ] Demais cortes de escopo do MVP (ex.: ordem do DNS no vertical slice); idle já registrado em Escopo do MVP
 - [ ] Reconsiderar o nível de acesso do comando `/start`, para permitir que usuários comuns possam iniciar o servidor
 
 ## Trabalho por etapa
@@ -53,7 +53,6 @@ Itens para discutir e pendentes de resolução.
 - [ ] `ServerProvider` mínimo (EC2 RunInstances / TerminateInstances)
 - [ ] Minecraft adapter (start/stop/health + paths de save; RCON)
 - [ ] `SaveStorage` no start/stop
-- [ ] `DnsProvider` (após o caminho feliz básico, se cortado no escopo do MVP)
 - [ ] `/start`, `/stop`, `/status` operacionais ponta a ponta
 
 ### 3 — Operação
@@ -62,4 +61,3 @@ Itens para discutir e pendentes de resolução.
 - [ ] Runbook de deploy (imagem ECR + serviço Fargate)
 - [ ] Alarmes / alertas Discord (R-005, ADR-015)
 - [ ] Smoke test documentado
-- [ ] Auto-stop e `/config idle` (pós-MVP)
