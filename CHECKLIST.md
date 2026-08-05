@@ -33,7 +33,6 @@ Explorações possíveis — sem compromisso de escopo ou prazo:
 
 Itens para discutir e pendentes de resolução.
 
-- [ ] IaC (CDK vs Terraform)
 - [ ] Onde roda o Control Plane
 - [ ] Contrato mínimo do `GameAdapter`
 - [ ] Estratégia de locking no `StateStore`
@@ -44,7 +43,7 @@ Itens para discutir e pendentes de resolução.
 
 ### 1 — Esqueleto do repositório
 
-- [ ] Estrutura de packages (`core`, `adapters/*`, `apps/control-plane`)
+- [ ] Estrutura de packages (`core`, `adapters/*`, `apps/control-plane`, `infra` com CDK)
 - [ ] TypeScript strict, lint/format
 - [ ] Popular `.gitignore` para Node/AWS/secrets
 - [ ] Fakes in-memory dos ports
@@ -62,7 +61,7 @@ Itens para discutir e pendentes de resolução.
 
 ### 3 — Operação
 
-- [ ] IaC da conta (conforme decisão de IaC)
+- [ ] IaC da conta (AWS CDK, ADR-018)
 - [ ] Runbook de deploy
 - [ ] Alarmes / alertas Discord (R-005, ADR-015)
 - [ ] Smoke test documentado

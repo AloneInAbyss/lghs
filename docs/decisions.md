@@ -113,3 +113,10 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Decisão:** Adapter AWS do `ServerProvider` usa **EC2 On-Demand**. Ciclo de vida: **`RunInstances` no start** e **`TerminateInstances` no stop** (após flush e upload do save). Bootstrap da instância via **user-data** (Java, jar, restore do S3, start do processo). Canal operacional na VM via **SSM** (sem SSH público). Security group: porta do jogo acessível aos jogadores; RCON restrito ao Control Plane.
 - **Consequências:** Cold start na ordem de minutos (Discord deferred/follow-up). IP muda a cada create (DNS, ADR-007/014). Compute parado zera com terminate; verdade do mundo permanece no S3. Stop/Start com EBS ou Spot ficam como otimizações futuras, não como contrato do MVP.
 - **Nota (jogos pesados):** O ciclo terminate + disco efêmero implica bootstrap a cada start. Para jogos pequenos o user-data basta. Em adapters com install grande (dezenas de GB), preferir **AMI** com os binários pré-instalados e manter no S3 sobretudo saves/configs — ou Stop/Start com EBS — em vez de baixar o jogo inteiro a cada `RunInstances`.
+
+## ADR-018 — Infraestrutura como código com AWS CDK (TypeScript)
+
+- **Status:** Aceita
+- **Contexto:** A conta AWS precisa ser reproduzível para self-host (DynamoDB, S3, Route 53, IAM, security groups, EC2 do Game Server, Control Plane, alarmes). O Control Plane já é TypeScript/Node (ADR-013); o runtime do jogo é EC2 (ADR-017). Terraform seria sólido, mas introduz HCL e fluxo de state à parte.
+- **Decisão:** Usar **AWS CDK em TypeScript** para declarar e publicar a infraestrutura (sintetiza CloudFormation). App de infra versionada no repositório (ex.: `infra/` ou equivalente). Secrets fora do código (Parameter Store / Secrets Manager).
+- **Consequências:** Um único ecossistema de linguagem no repo; onboarding de deploy = Node + credenciais AWS + CDK CLI. A escolha é AWS-first (alinhada ao produto); troca de cloud no futuro exigiria outra camada de IaC, sem invalidar ports/adapters do núcleo. O *onde* o Control Plane roda continua pendente e será modelado no CDK quando fechado.

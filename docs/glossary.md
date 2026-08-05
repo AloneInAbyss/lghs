@@ -27,3 +27,5 @@ Termos usados na documentação e no código do LGHS.
 | **Usuário comum** | Usuário comum com subconjunto de comandos no Discord |
 | **Discord Slash Command** | Comando de aplicação do Discord usado como interface do LGHS |
 | **ADR** | Architectural Decision Record, registra todas as decisões tomadas para o design do sistema |
+| **IaC** | Infrastructure as Code — infraestrutura declarada e versionada em código |
+| **CDK** | AWS Cloud Development Kit — IaC em TypeScript (ou outra linguagem) que gera CloudFormation |

@@ -74,6 +74,7 @@ Implementações específicas visando facilitar uma eventual migração para out
 - Control Plane e Game Server rodam como **recursos separados** na mesma conta/região AWS
 - O Game Server compõe a maior partes dos custos de infra, mas que pode ser amenizado através da função de auto-stop
 - Control Plane deverá ser pequeno, mas contínuo, para aceitar comandos e supervisionar o sistema
+- A conta AWS é provisionada via **AWS CDK (TypeScript)**; o *onde* o Control Plane roda será detalhado quando essa decisão for fechada
 
 ## Segurança
 
