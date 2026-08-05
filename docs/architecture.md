@@ -55,7 +55,7 @@ Foi escolhida uma arquitetura hexagonal nas fronteiras: não tratamos diretament
 | `StateStore` | Estado do sistema e configurações persistidas |
 | `SaveStorage` | Upload/download de saves e configs |
 | `DnsProvider` | Atualizar o registro DNS do hostname de conexão para o IP atual |
-| `GameAdapter` | Contrato por jogo: start hooks, paths de save, health, configs; canal de supervisão específico do jogo |
+| `GameAdapter` | Contrato por jogo: identidade, porta, saves, bootstrap e sessão de supervisão |
 
 ### Adapters
 
@@ -127,11 +127,11 @@ Detalhes internos do provider (instância terminada, volume, etc.) não precisam
 1. Control Plane valida permissão (admin)
 2. Valida pré-condições: estado `stopped`, ou `error` sem runtime ativo; aplica mutex (falha se já houver ciclo ativo)
 3. Estado → `starting` (escrita condicional no `StateStore`)
-4. Resolve GameAdapter + configurações persistidas
-5. `ServerProvider` sobe o runtime (EC2 `RunInstances` com user-data)
-6. Restaura save/configs do `SaveStorage` **na instância**
-7. GameAdapter inicia o processo do jogo (se ainda não iniciado pelo bootstrap)
-8. Aguarda health do adapter
+4. Resolve `GameAdapter` + configurações persistidas; obtém `bootstrapPlan` e `savePaths`
+5. `ServerProvider` sobe o runtime (EC2 `RunInstances` com user-data derivado do `bootstrapPlan`)
+6. Bootstrap na instância: restore dos `savePaths` via `SaveStorage` + start do processo do jogo
+7. `GameAdapter.connect(runtime)` → `GameSession`
+8. Aguarda health `GameSession.waitUntilHealthy`
 9. `DnsProvider` atualiza o hostname (Route 53) para o IP público do Game Server
 10. Persiste estado (jogo, IP, hostname, iniciado em, etc.) e estado → `running`
 11. Responde no Discord com endereço de conexão e status
@@ -145,8 +145,8 @@ O restore não pode ocorrer antes do passo 5: não há disco/alvo de cópia enqu
   a. Usuário admin executa `/stop` (pré-condição: `running` ou `error`)
   b. Acionado pelo processo de auto-stop (a partir de `running`)
 2. Estado → `stopping`
-3. Encerrar processo do jogo de forma ordenada (quando houver runtime)
-4. Upload do save e configs através do `SaveStorage`
+3. Com runtime ativo: `GameSession.flush` e em seguida `GameSession.shutdown`
+4. Upload dos `savePaths` através do `SaveStorage`
 5. `ServerProvider` termina o runtime (EC2 `TerminateInstances`)
 6. Estado → `stopped`
 7. Em falha: estado → `error`
@@ -158,11 +158,34 @@ O restore não pode ocorrer antes do passo 5: não há disco/alvo de cópia enqu
 3. Idle-timeout ajustável via `/config idle <tempo>` e persistido no `StateStore`
 4. Se o valor configurado é zero, desativa o auto-stop
 
-## Supervisão do Game Server
+## Contrato do `GameAdapter`
 
-Health, presença de jogadores e flush seguro são responsabilidade do **GameAdapter** — o canal varia por jogo.
+O núcleo só fala com o port. Cada jogo implementa no mínimo:
 
-No adapter Minecraft, o Control Plane usa **polling RCON** para health, listagem de jogadores e comandos de save/flush. Outros adapters podem usar outro mecanismo sem alterar o núcleo.
+| Elemento | Papel |
+| --- | --- |
+| `id` | Identificador no catálogo (ex.: `minecraft`) |
+| `connectionPort` | Porta canônica para jogadores / `/status` / DNS |
+| `savePaths()` | Paths relativos a sincronizar com `SaveStorage` |
+| `bootstrapPlan(...)` | Plano tipado embutido no user-data pelo `ServerProvider` |
+| `connect(runtime)` → `GameSession` | Sessão de supervisão no host já no ar |
+
+`GameSession`: `waitUntilHealthy`, `flush`, `shutdown`, `playerCount`.
+
+### Divisão de responsabilidades
+
+| Responsabilidade | Dono |
+| --- | --- |
+| `RunInstances` / `TerminateInstances`, SG, IP | `ServerProvider` |
+| Upload/download S3 dos `savePaths()` | `SaveStorage` (acionado no bootstrap e no stop) |
+| Conteúdo do bootstrap (install, binário, start) | `bootstrapPlan()` do `GameAdapter` |
+| Health / flush / shutdown / players | `GameSession` do `GameAdapter` |
+| DNS | `DnsProvider` |
+| Mutex e máquina de estados | Control Plane + `StateStore` |
+
+### Supervisão
+
+O canal de supervisão é interno ao adapter. No Minecraft, `GameSession` usa **polling RCON**. Outros jogos podem usar outro mecanismo sem alterar o núcleo.
 
 ## Concorrência e Discord
 

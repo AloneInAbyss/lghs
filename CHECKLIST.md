@@ -33,7 +33,6 @@ Explorações possíveis — sem compromisso de escopo ou prazo:
 
 Itens para discutir e pendentes de resolução.
 
-- [ ] Contrato mínimo do `GameAdapter`
 - [ ] Estratégia de locking no `StateStore`
 - [ ] Demais cortes de escopo do MVP (ex.: ordem do DNS no vertical slice); idle já registrado em Escopo do MVP
 - [ ] Reconsiderar o nível de acesso do comando `/start`, para permitir que usuários comuns possam iniciar o servidor

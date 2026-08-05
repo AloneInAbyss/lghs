@@ -11,6 +11,8 @@ Termos usados na documentação e no código do LGHS.
 | **Game Server** | Instância de runtime onde o jogo dedicado de fato roda (sob demanda) |
 | **Catálogo** | Lista fechada de jogos suportados; cada entrada tem um GameAdapter |
 | **GameAdapter** | Adapter que conhece um jogo específico: como instalar/iniciar/parar, portas, saves, healthcheck, configs |
+| **GameSession** | Sessão de supervisão num runtime ativo: health, flush, shutdown, playerCount |
+| **BootstrapPlan** | Plano tipado do adapter que o ServerProvider serializa no user-data da EC2 |
 | **ServerProvider** (port) | Abstração para criar/iniciar/parar/redimensionar/obter status e IP do runtime de hospedagem |
 | **EC2 Adapter** | Implementação do ServerProvider na AWS via EC2 On-Demand (ADR-017) |
 | **User-data** | Script de bootstrap injetado na criação da EC2 (cloud-init): prepara Java, save, jar e sobe o jogo |

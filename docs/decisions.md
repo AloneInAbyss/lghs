@@ -127,3 +127,16 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Contexto:** O Control Plane precisa estar sempre ligado (comandos Discord, orquestração, supervisão RCON), separado do Game Server (ADR-009), com custo fixo baixo e restart automático (R-005). Lambda não serve bem a um bot/supervisor de longa duração; EC2 dedicada funciona, mas acrescenta operação de SO sem necessidade.
 - **Decisão:** Rodar o Control Plane como **serviço ECS em Fargate** com **uma task** (`desiredCount = 1`), imagem container do app Node, mesma VPC/região do Game Server. Sem load balancer público no MVP (tráfego Discord é outbound). Logs em CloudWatch; secrets em Parameter Store / Secrets Manager. Security group da task é a origem permitida na porta RCON da EC2 do jogo (ADR-017).
 - **Consequências:** Custo fixo 24/7 da task (esperado); pico de custo continua na EC2 do jogo. CDK modela cluster, task definition, service e ECR (ADR-018). Alarmes de task/serviço caídas alimentam o caminho Discord (ADR-015). Tamanho da task (CPU/memória) e pipeline de build/push da imagem são detalhes de implementação/operação.
+
+## ADR-020 — Contrato mínimo do `GameAdapter`
+
+- **Status:** Aceita
+- **Contexto:** O núcleo orquestra o ciclo de vida sem conhecer detalhes de cada jogo (ADR-003). É preciso um contrato fino o bastante para start/stop/status e largo o bastante para o Minecraft (ADR-016) e futuros adapters, sem empurrar lógica de jogo para o `ServerProvider` nem transformar cada adapter num mini Control Plane.
+- **Decisão:** O port `GameAdapter` expõe, no mínimo:
+  - `id` — identificador no catálogo
+  - `connectionPort` — porta canônica dos jogadores
+  - `savePaths()` — paths relativos a sincronizar via `SaveStorage`
+  - `bootstrapPlan(...)` — plano tipado que o `ServerProvider` serializa no user-data (install, binário, restore, start do processo)
+  - `connect(runtime)` → `GameSession` com `waitUntilHealthy`, `flush`, `shutdown` e `playerCount`
+  - `playerCount` faz parte do contrato desde já (idle/auto-stop usam depois; MVP pode não consumir)
+- **Consequências:** No caminho feliz, o processo do jogo sobe pelo bootstrap (ADR-017); o Control Plane não exige `startProcess()` remoto genérico. Health/flush/shutdown/players usam o canal do adapter (RCON no Minecraft). Novos jogos = nova implementação do mesmo contrato. Detalhes de serialização do `bootstrapPlan` e timeouts default são de implementação.
