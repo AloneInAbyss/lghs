@@ -13,7 +13,7 @@ Documentação dos **Discord Slash Commands** do LGHS.
 | **Descrição** | Inicia o servidor de um jogo |
 | **Permissão** | Admin |
 | **Pré-condições** | Estado: `stopped` (ou `error` sem runtime ativo) |
-| **Observações** | Caso não informe o game, utiliza o último selecionado |
+| **Observações** | Caso não informe o game, utiliza o último selecionado; responde com status e IP de conexão |
 
 #### Opções
 
@@ -34,22 +34,7 @@ Documentação dos **Discord Slash Commands** do LGHS.
 
 | Campo | Conteúdo |
 | --- | --- |
-| **Descrição** | Informa estado, jogo, endereço de conexão, tempo em inatividade, etc. |
+| **Descrição** | Informa estado, jogo, endereço de conexão (IP + porta), etc. |
 | **Permissão** | Usuário comum |
 | **Pré-condições** | Nenhuma |
 | **Observações** | Disponível para qualquer usuário do servidor Discord |
-
-### `/config idle <minutos>`
-
-| Campo | Conteúdo |
-| --- | --- |
-| **Descrição** | Ajusta o tempo de inatividade para encerrar o servidor (auto-stop) |
-| **Permissão** | Admin |
-| **Pré-condições** | Nenhuma |
-| **Observações** | Valor `0` desativa o auto-stop; persistido no StateStore |
-
-#### Opções
-
-| Nome | Tipo | Obrigatório | Descrição | Exemplo |
-| --- | --- | --- | --- | --- |
-| `idle` | inteiro | sim | Minutos sem jogadores até o auto-stop | `/config idle 30` |

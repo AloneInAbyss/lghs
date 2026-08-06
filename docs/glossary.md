@@ -5,7 +5,7 @@ Termos usados na documentação e no código do LGHS.
 | Termo | Definição |
 | --- | --- |
 | **LGHS** | *Leonhart's Game Hosting System* — o produto/sistema como um todo |
-| **Control Plane** | Processo orquestrador, sempre ligado, que ouve o Discord, aplica permissões, controla ciclo de vida, auto-stop, DNS, etc. Não é o processo do jogo. |
+| **Control Plane** | Processo orquestrador, sempre ligado, que ouve o Discord, aplica permissões, controla ciclo de vida, etc. Não é o processo do jogo. |
 | **Fargate** | Modo de ECS em que a AWS gerencia o compute do container |
 | **ECS** | Elastic Container Service — orquestra containers na AWS |
 | **Game Server** | Instância de runtime onde o jogo dedicado de fato roda (sob demanda) |
@@ -17,14 +17,9 @@ Termos usados na documentação e no código do LGHS.
 | **EC2 Adapter** | Implementação do ServerProvider na AWS via EC2 On-Demand (ADR-017) |
 | **User-data** | Script de bootstrap injetado na criação da EC2 (cloud-init): prepara Java, save, jar e sobe o jogo |
 | **SSM** | AWS Systems Manager — canal operacional na instância sem SSH público |
-| **StateStore** (port) | Persistência do estado do sistema (servidor ligado?, configs, ACL, idle-timeout, metadados) |
+| **StateStore** (port) | Persistência do estado do sistema (servidor ligado?, configs, metadados) |
 | **SaveStorage** (port) | Persistência de mundos/saves e configs do jogo entre sessões |
-| **DnsProvider** (port) | Abstração para atualizar o registro DNS do hostname de conexão |
-| **Route 53 Adapter** | Implementação do DnsProvider na AWS Route 53 |
-| **Hostname de conexão** | Endereço canônico usado para conexão |
-| **Estado do Game Server** | `stopped`, `starting`, `running`, `stopping`, ou `error` (ver [architecture.md](/docs/architecture.md)) |
-| **Idle-timeout** | Tempo sem jogadores após o qual o auto-stop é disparado; configurável via Discord |
-| **Auto-stop** | Encerramento automático do Game Server por ociosidade |
+| **Estado do Game Server** | `stopped`, `starting`, `running`, `stopping`, ou `error` |
 | **Mutex global** | Regra de no máximo um Game Server ativo por instalação do LGHS |
 | **ACL** | Access Control List, define as permissões de cada recurso por usuário |
 | **Admin** | Papel com permissão total aos comandos no Discord |

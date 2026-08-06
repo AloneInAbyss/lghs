@@ -10,7 +10,7 @@ Lista de riscos conhecidos e mitigações importantes para a integridade do sist
   - Auth por senha no jogo
   - Configuração de whitelist no jogo
   - No caso de nenhuma das opções acima ser possível, utilizar plugin ou mecanismo dentro do adapter
-- **Status:** Aceito (ADR-006, ADR-007)
+- **Status:** Aceito (ADR-006, ADR-007, ADR-016)
 
 ## R-002 — Custo variável do Game Server
 
@@ -18,14 +18,14 @@ Lista de riscos conhecidos e mitigações importantes para a integridade do sist
 - **Impacto:** Custo adicional caso o servidor permaneça ligado por erro ou por gasto desnecessário de recursos.
 - **Mitigações:**
   - definir orçamento dentro do provedor cloud
-  - auto-stop
   - apenas um servidor ativo por vez
   - predefinições do tamanho do servidor na hospedagem (small/medium/large)
+  - encerrar via `/stop` quando a sessão terminar
 - **Status:** Aceito (ADR-004, ADR-008, ADR-009)
 
 ## R-003 — Cópia a quente e integridade de saves
 
-- **Descrição:** Saves e configs sobem ao `SaveStorage` apenas no `/stop` e no auto-stop. Se o jogo não fizer flush adequado antes da cópia, o upload pode ficar inconsistente ou corrompido.
+- **Descrição:** Saves e configs sobem ao `SaveStorage` antes do desligamento. Se o jogo não fizer flush adequado antes da cópia, o upload pode ficar inconsistente ou corrompido.
 - **Impacto:** Perda de progresso desde o último stop bem-sucedido; save inutilizável na próxima sessão.
 - **Mitigações:**
   - GameAdapter deve coordenar procedimento seguro de flush/save antes da cópia

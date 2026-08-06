@@ -9,7 +9,7 @@ Registro de progresso e pendências do projeto.
 Itens essenciais para a versão inicial:
 
 - Comandos: `/start`, `/stop`, `/status`
-- Jogo: Minecraft Java vanilla (ADR-016 em [`docs/decisions.md`](docs/decisions.md))
+- Jogo: Minecraft Java vanilla
 - Subir e derrubar o runtime
 - Restore e upload de saves/configs
 - Health check via adapter (RCON)
@@ -20,8 +20,8 @@ Itens essenciais para a versão inicial:
 Itens que permanecem na visão de produto, mas fora da primeira entrega:
 
 - Auto-stop por inatividade
-- `/config idle` (ADR-008)
-- DNS canônico automatizado (`DnsProvider` / Route 53; ADR-007, ADR-014)
+- `/config idle`
+- DNS canônico automatizado (`DnsProvider` / Route 53)
 
 ### Ideias futuras
 
@@ -57,7 +57,7 @@ Itens para discutir e pendentes de resolução.
 
 ### 3 — Operação
 
-- [ ] IaC da conta (AWS CDK, ADR-018)
+- [ ] IaC da conta (AWS CDK)
 - [ ] Runbook de deploy (imagem ECR + serviço Fargate)
-- [ ] Alarmes / alertas Discord (R-005, ADR-015)
+- [ ] Alarmes / alertas Discord
 - [ ] Smoke test documentado

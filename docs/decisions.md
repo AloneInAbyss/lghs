@@ -43,14 +43,14 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 
 ## ADR-007 — Conexão por domínio
 
-- **Status:** Aceita
+- **Status:** Adiada (fora da primeira entrega)
 - **Contexto:** IP público muda a cada start; um hostname estável facilita a conexão dos jogadores.
 - **Decisão:** O endereço canônico de conexão é um hostname gerenciado. No `/start`, após o Game Server ficar saudável, o Control Plane atualiza o registro DNS para o IP atual.
 - **Consequências:** Jogadores e `/status` usam o hostname; o IP continua existindo no runtime, mas não é a fonte da verdade da UX. Requer port `DnsProvider` (ADR-014).
 
 ## ADR-008 — Auto-stop por inatividade configurável
 
-- **Status:** Aceita
+- **Status:** Adiada (fora da primeira entrega)
 - **Decisão:** Timeout configurável via Discord (`/config idle`), persistido. Ao atingir o limite, o fluxo de stop inicia. Valor `0` desativa o auto-stop.
 - **Consequências:** Control Plane precisa supervisionar o Game Server enquanto ele estiver up.
 
@@ -70,7 +70,7 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 ## ADR-011 — Saves e configs em S3 via port `SaveStorage`
 
 - **Status:** Aceita
-- **Decisão:** `SaveStorage` persiste saves e configs do jogo entre sessões. O upload ocorre no `/stop` e no auto-stop, antes de destruir/parar o runtime.
+- **Decisão:** `SaveStorage` persiste saves e configs do jogo entre sessões. O upload ocorre antes de destruir/parar o runtime.
 - **Consequências:** GameAdapter deve coordenar flush/save seguro antes da cópia/upload.
 
 ## ADR-012 — Providers desacoplados através de Ports & Adapters
@@ -87,7 +87,7 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 
 ## ADR-014 — DNS via Route 53 e port `DnsProvider`
 
-- **Status:** Aceita
+- **Status:** Adiada (fora da primeira entrega)
 - **Contexto:** O hostname de conexão precisa apontar para o IP do Game Server a cada start, sem acoplar DNS ao compute.
 - **Decisão:** Port `DnsProvider` com adapter Route 53; o Control Plane atualiza o registro após o health check do start.
 - **Consequências:** `ServerProvider` permanece focado em runtime; trocar de provedor DNS no futuro não exige reescrever o provider de compute.
@@ -95,7 +95,7 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 ## ADR-015 — Observabilidade com CloudWatch e alertas no Discord
 
 - **Status:** Aceita
-- **Contexto:** Se o Control Plane cair, o Game Server pode continuar ligado sem auto-stop nem comandos (R-005).
+- **Contexto:** Se o Control Plane cair, o Game Server pode continuar ligado (R-005).
 - **Decisão:** CloudWatch Logs + CloudWatch Alarms; notificações exclusivamente no **Discord**. Para alarmes com Control Plane indisponível, um caminho mínimo (Lambda → webhook) posta no Discord.
 - **Consequências:** Operação permanece na AWS + Discord; self-hosters configuram canal/webhook de alerta na instalação.
 
@@ -111,13 +111,13 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 - **Status:** Aceita
 - **Contexto:** O `ServerProvider` precisa materializar um único Game Server sob demanda (ADR-004, ADR-012), com IP público, disco efêmero, restore/upload via `SaveStorage` e supervisão RCON (ADR-016). Alternativas (Spot, ECS, Fargate, Lightsail) foram descartadas para o MVP: Spot pode interromper a sessão; containers acrescentam complexidade sem benefício com mutex = 1.
 - **Decisão:** Adapter AWS do `ServerProvider` usa **EC2 On-Demand**. Ciclo de vida: **`RunInstances` no start** e **`TerminateInstances` no stop** (após flush e upload do save). Bootstrap da instância via **user-data** (Java, jar, restore do S3, start do processo). Canal operacional na VM via **SSM** (sem SSH público). Security group: porta do jogo acessível aos jogadores; RCON restrito ao Control Plane.
-- **Consequências:** Cold start na ordem de minutos (Discord deferred/follow-up). IP muda a cada create (DNS, ADR-007/014). Compute parado zera com terminate; verdade do mundo permanece no S3. Stop/Start com EBS ou Spot ficam como otimizações futuras, não como contrato do MVP.
+- **Consequências:** Cold start na ordem de minutos (Discord deferred/follow-up). IP muda a cada create; `/status` e a resposta do `/start` expõem o IP atual. Compute parado zera com terminate; verdade do mundo permanece no S3. Stop/Start com EBS ou Spot ficam como otimizações futuras, não como contrato do MVP.
 - **Nota (jogos pesados):** O ciclo terminate + disco efêmero implica bootstrap a cada start. Para jogos pequenos o user-data basta. Em adapters com install grande (dezenas de GB), preferir **AMI** com os binários pré-instalados e manter no S3 sobretudo saves/configs — ou Stop/Start com EBS — em vez de baixar o jogo inteiro a cada `RunInstances`.
 
 ## ADR-018 — Infraestrutura como código com AWS CDK (TypeScript)
 
 - **Status:** Aceita
-- **Contexto:** A conta AWS precisa ser reproduzível para self-host (DynamoDB, S3, Route 53, IAM, security groups, EC2 do Game Server, Control Plane, alarmes). O Control Plane já é TypeScript/Node (ADR-013) com ECS Fargate (ADR-019); o runtime do jogo é EC2 (ADR-017). Terraform seria sólido, mas introduz HCL e fluxo de state à parte.
+- **Contexto:** A conta AWS precisa ser reproduzível para self-host (DynamoDB, S3, IAM, security groups, EC2 do Game Server, Control Plane, alarmes). O Control Plane já é TypeScript/Node (ADR-013) com ECS Fargate (ADR-019); o runtime do jogo é EC2 (ADR-017). Terraform seria sólido, mas introduz HCL e fluxo de state à parte.
 - **Decisão:** Usar **AWS CDK em TypeScript** para declarar e publicar a infraestrutura (sintetiza CloudFormation). App de infra versionada no repositório (ex.: `infra/` ou equivalente). Secrets fora do código (Parameter Store / Secrets Manager).
 - **Consequências:** Um único ecossistema de linguagem no repo; onboarding de deploy = Node + credenciais AWS + CDK CLI. A escolha é AWS-first (alinhada ao produto); troca de cloud no futuro exigiria outra camada de IaC, sem invalidar ports/adapters do núcleo.
 
@@ -138,5 +138,4 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
   - `savePaths()` — paths relativos a sincronizar via `SaveStorage`
   - `bootstrapPlan(...)` — plano tipado que o `ServerProvider` serializa no user-data (install, binário, restore, start do processo)
   - `connect(runtime)` → `GameSession` com `waitUntilHealthy`, `flush`, `shutdown` e `playerCount`
-  - `playerCount` faz parte do contrato desde já (idle/auto-stop usam depois; MVP pode não consumir)
 - **Consequências:** No caminho feliz, o processo do jogo sobe pelo bootstrap (ADR-017); o Control Plane não exige `startProcess()` remoto genérico. Health/flush/shutdown/players usam o canal do adapter (RCON no Minecraft). Novos jogos = nova implementação do mesmo contrato. Detalhes de serialização do `bootstrapPlan` e timeouts default são de implementação.

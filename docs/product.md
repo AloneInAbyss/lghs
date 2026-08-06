@@ -15,16 +15,14 @@ O objetivo do LGHS é **abstrair essa operação** para que o ciclo de vida do s
 - Iniciar e encerrar um servidor de jogo por comandos no Discord
 - Indicar qual jogo do catálogo deve subir
 - Persistir mundos/saves e configs do jogo entre sessões
-- Oferecer um hostname estável de conexão (domínio), sem de números de IP mutáveis
-- Desligar automaticamente quando o servidor estiver ocioso (economia de custo e recursos)
-- Disponibilizar o status, acesso e configurações do servidor por comandos no Discord
+- Disponibilizar o status e o endereço de conexão do servidor por comandos no Discord
 
 ## Público
 
 | Papel              | Descrição                                               |
 | ------------------ | ------------------------------------------------------- |
 | Operador principal | Dono do Discord/infra; administra o LGHS e permissões   |
-| Administradores    | Interagem com qualquer comando (ex.: start/stop/config) |
+| Administradores    | Interagem com qualquer comando                          |
 | Usuários comuns    | Interagem com comandos liberados (ex.: status)          |
 
 O uso primário é para um servidor de Discord pequeno compartilhado entre amigos.
