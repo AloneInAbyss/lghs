@@ -20,5 +20,10 @@ Em mudanças amplas, leia na ordem abaixo. Em edits locais e pequenos, leia só 
 - Código em **inglês**; documentação em **português**
 - Não commitar secrets (tokens, chaves, webhooks, credenciais)
 - Respeitar a arquitetura de ports/adapters — o núcleo não fala com SDKs de fornecedor diretamente
-- Não expandir escopo sem pedido explícito do usuário
 - Preferir editar docs existentes a criar documentos paralelos redundantes
+
+## Regras de comportamento
+
+- Não expandir escopo sem pedido explícito do usuário
+- Não escreva citações a outros documentos desnecessariamente (ADRs, riscos) a menos que seja realmente útil naquele contexto
+- Quando um requisito for alterado, verifique se é necessário atualizar alguma documentação em /docs
