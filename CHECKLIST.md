@@ -40,7 +40,7 @@ Itens para discutir e pendentes de resolução.
 
 ### 1 — Esqueleto do repositório
 
-- [ ] Estrutura de packages (`core`, `adapters/*`, `apps/control-plane`, `infra` com CDK)
+- [ ] Estrutura de packages (`apps/control-plane`, `packages/core`, `packages/adapters/*`, `infra` com CDK)
 - [ ] TypeScript strict, lint/format
 - [ ] Popular `.gitignore` para Node/AWS/secrets
 - [ ] Fakes in-memory dos ports

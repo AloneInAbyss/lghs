@@ -32,7 +32,7 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
 
 - **Status:** Aceita
 - **Contexto:** A interface deve ser de fácil acesso e uso para todos os potenciais usuários.
-- **Decisão:** Uso de slash command em servidor do Discord com autorização através das roles do próprio Discord.
+- **Decisão:** Uso de slash command em servidor do Discord com autorização através das roles do próprio Discord. Biblioteca: ADR-021.
 - **Consequências:** Operações longas precisam de feedback assíncrono no Discord (mensagens de progresso/resultado).
 
 ## ADR-006 — Permissões de admin vs usuário
@@ -138,4 +138,11 @@ Registro de decisões de arquitetura (ADR). Novas decisões relevantes devem ser
   - `savePaths()` — paths relativos a sincronizar via `SaveStorage`
   - `bootstrapPlan(...)` — plano tipado que o `ServerProvider` serializa no user-data (install, binário, restore, start do processo)
   - `connect(runtime)` → `GameSession` com `waitUntilHealthy`, `flush`, `shutdown` e `playerCount`
-- **Consequências:** No caminho feliz, o processo do jogo sobe pelo bootstrap (ADR-017); o Control Plane não exige `startProcess()` remoto genérico. Health/flush/shutdown/players usam o canal do adapter (RCON no Minecraft). Novos jogos = nova implementação do mesmo contrato. Detalhes de serialização do `bootstrapPlan` e timeouts default são de implementação.
+- **Consequências:** No caminho feliz, o processo do jogo sobe pelo bootstrap (ADR-017); o Control Plane não exige `startProcess()` remoto genérico. Health/flush/shutdown/players usam o canal do adapter (RCON no Minecraft). Novos jogos = nova implementação do mesmo contrato. Forma do `BootstrapPlan` e do item de estado: ver [`architecture.md`](architecture.md).
+
+## ADR-021 — Interface Discord com discord.js
+
+- **Status:** Aceita
+- **Contexto:** O Control Plane em TypeScript/Node (ADR-013) precisa registrar e tratar slash commands com deferred reply / follow-up (ADR-005). Alternativas (Discordeno, Oceanic, REST puro) existem, mas para um bot de um guild com orquestração longa o ecossistema e a documentação do **discord.js** reduzem atrito.
+- **Decisão:** Usar **discord.js** no adapter de interface (`packages/adapters/discord`). O núcleo continua sem importar a biblioteca — apenas ports/handlers de aplicação.
+- **Consequências:** Tipagem e guias maduros para interactions. Versão major pinada no manifesto do package; upgrades major tratados como mudança consciente. Gateway outbound a partir do Fargate (ADR-019), sem ALB para o bot.

@@ -56,13 +56,37 @@ Foi escolhida uma arquitetura hexagonal nas fronteiras: não tratamos diretament
 
 Implementações específicas visando facilitar uma eventual migração para outro fornecedor.
 
-| Port             | Adapter                         |
-| ---------------- | ------------------------------- |
-| `ServerProvider` | AWS (EC2 On-Demand)             |
-| `StateStore`     | DynamoDB                        |
-| `SaveStorage`    | S3                              |
-| `GameAdapter`    | Minecraft Java                  |
-| Interface        | Discord slash commands          |
+| Port             | Adapter                             |
+| ---------------- | ----------------------------------- |
+| `ServerProvider` | AWS (EC2 On-Demand)                 |
+| `StateStore`     | DynamoDB                            |
+| `SaveStorage`    | S3                                  |
+| `GameAdapter`    | Minecraft Java                      |
+| Interface        | Discord slash commands (discord.js) |
+
+## Estrutura do repositório
+
+Layout proposto (TypeScript / monorepo). Foco na separação de responsabilidades.
+
+```text
+/
+├── apps/
+│   └── control-plane/          # processo Fargate: wiring, Discord, orquestração
+├── packages/
+│   ├── core/                   # domínio, ports, máquina de estados
+│   └── adapters/
+│       ├── discord/            # slash commands via discord.js
+│       ├── dynamodb/           # StateStore
+│       ├── ec2/                # ServerProvider
+│       ├── s3/                 # SaveStorage
+│       └── minecraft/          # GameAdapter + GameSession
+├── infra/                      # AWS CDK
+├── docs/
+├── AGENTS.md
+├── CHECKLIST.md
+├── README.md
+└── LICENSE
+```
 
 ## Separação de recursos
 
@@ -113,6 +137,22 @@ stateDiagram-v2
 
 Detalhes internos do provider (instância terminada, volume, etc.) não precisam aparecer como estados públicos separados.
 
+## Persistência de estado (`StateStore`)
+
+Uma instalação LGHS usa **um registro principal** de ciclo de vida no DynamoDB. Schema lógico:
+
+| Campo | Uso |
+| --- | --- |
+| `pk` | Chave da instalação (ex.: `INSTALL#default`) |
+| `status` | `stopped` \| `starting` \| `running` \| `stopping` \| `error` |
+| `gameId` | Jogo ativo ou último selecionado |
+| `runtimeId` | Id da instância EC2, se houver |
+| `publicIp` | IP público atual (para `/status` e resposta do `/start`) |
+| `connectionPort` | Porta do jogo (do `GameAdapter`) |
+| `startedAt` | Início da sessão `running` (ISO-8601), se aplicável |
+| `errorMessage` | Detalhe legível quando `status = error` |
+| `updatedAt` | Última transição |
+
 ## Fluxos principais
 
 ### Start
@@ -154,6 +194,23 @@ O núcleo só fala com o port. Cada jogo implementa no mínimo:
 | `connect(runtime)` → `GameSession` | Sessão de supervisão no host já no ar |
 
 `GameSession`: `waitUntilHealthy`, `flush`, `shutdown`, `playerCount`.
+
+### `BootstrapPlan`
+
+Estrutura tipada devolvida pelo `GameAdapter` e consumida pelo `ServerProvider`, que a **serializa em user-data** (shell/cloud-init). O núcleo não monta scripts AWS à mão.
+
+Campos conceituais:
+
+| Campo | Papel |
+| --- | --- |
+| `workingDirectory` | Diretório raiz do servidor de jogo na instância |
+| `setupCommands` | Comandos de prepare (ex.: instalar Java) |
+| `artifacts` | Artefatos a obter (URL ou objeto S3 → path local), ex.: jar |
+| `restoreSave` | Se true, restaurar `savePaths` do `SaveStorage` antes do start |
+| `startCommand` | Comando que sobe o processo do jogo |
+| `env` | Variáveis de ambiente necessárias ao processo |
+
+Detalhes de escaping/serialização ficam no adapter EC2. Timeouts de health ficam no `GameSession` / configuração do adapter.
 
 ### Divisão de responsabilidades
 
