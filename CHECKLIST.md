@@ -40,24 +40,46 @@ Itens para discutir e pendentes de resolução.
 
 ### 1 — Esqueleto do repositório
 
-- [x] Estrutura de packages (`apps/control-plane`, `packages/core`, `packages/adapters/*`, `infra` com CDK)
-- [x] TypeScript strict, lint/format
-- [x] Popular `.gitignore` para Node/AWS/secrets
-- [x] Fakes in-memory dos ports
-- [x] Testes de domínio da máquina de estados (sem AWS)
+Monorepo e domínio testável sem AWS/Discord.
+
+**Packages e domínio**
+
+- [x] Estrutura de packages (`apps/control-plane`, `packages/core`, `packages/adapters/*`, `infra`)
+- [x] Ports + fakes in-memory
+- [x] Máquina de estados do ciclo de vida + testes de domínio (sem AWS)
+
+**Tooling do monorepo**
+
+- [x] pnpm workspaces (`pnpm-workspace.yaml`, `packageManager`, `engines`)
+- [x] TypeScript strict (`tsconfig.base.json` + configs por package; `types: ["node"]` onde necessário)
+- [x] ESLint + Prettier (incl. ignores coerentes com docs/lockfile)
+- [x] `.gitignore` para Node/AWS/secrets/coverage/build
+- [x] Scripts raiz: `build`, `test`, `test:coverage`, `lint`, `format`, `typecheck`
+- [x] Cobertura Vitest (`@vitest/coverage-v8`) no core — sem thresholds de CI por enquanto
+- [x] Dependências alinhadas a um conjunto **compatível** (não apenas “latest” do registry; ex.: TypeScript dentro do peer do `typescript-eslint`)
+
+**DX / editor**
+
+- [x] `.vscode/extensions.json` (recomendações do workspace)
+- [x] `.vscode/settings.json` (format on save / formatter do time)
+- [x] `.vscode/launch.json` + `tasks.json` (debug Vitest e control-plane)
 
 ### 2 — Vertical slice
 
-- [ ] `StateStore` (DynamoDB) + máquina de estados
-- [ ] Discord bot com deferred reply / follow-up + ACL por role
+Comandos operacionais ponta a ponta (ainda podendo desenvolver use cases com fakes antes dos adapters AWS).
+
+- [ ] Use cases de `/start`, `/stop`, `/status` no núcleo (orquestração + pré-condições)
+- [ ] `StateStore` em DynamoDB
+- [ ] Discord bot (discord.js) com deferred reply / follow-up + ACL por role
 - [ ] `ServerProvider` mínimo (EC2 RunInstances / TerminateInstances)
 - [ ] Minecraft adapter (start/stop/health + paths de save; RCON)
-- [ ] `SaveStorage` no start/stop
+- [ ] `SaveStorage` (S3) no ciclo start/stop
 - [ ] `/start`, `/stop`, `/status` operacionais ponta a ponta
+- [ ] Cobertura nos packages com implementação real (além do core), ainda sem gate rígido de CI
 
 ### 3 — Operação
 
-- [ ] IaC da conta (AWS CDK)
+- [ ] IaC da conta (AWS CDK em `infra/`)
 - [ ] Runbook de deploy (imagem ECR + serviço Fargate)
 - [ ] Alarmes / alertas Discord
 - [ ] Smoke test documentado
