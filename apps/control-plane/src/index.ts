@@ -1,5 +1,5 @@
 /**
- * Control Plane entry wiring (Discord + ports) — filled in stage 2.
+ * TODO: Wire Control Plane entry (Discord + ports).
  */
 export function placeholder(): string {
   return "lghs-control-plane";

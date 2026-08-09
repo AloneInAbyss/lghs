@@ -1,4 +1,4 @@
 /**
- * Minecraft Java Vanilla `GameAdapter` + RCON `GameSession` — implemented in stage 2.
+ * TODO: Implement Minecraft Java Vanilla `GameAdapter` + RCON `GameSession`.
  */
 export {};

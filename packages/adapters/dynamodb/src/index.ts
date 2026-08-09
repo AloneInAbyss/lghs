@@ -1,4 +1,4 @@
 /**
- * DynamoDB adapter for `StateStore` — implemented in stage 2.
+ * TODO: Implement DynamoDB adapter for `StateStore`.
  */
 export {};

@@ -1,5 +1,5 @@
 /**
- * AWS CDK app for the LGHS account — stacks and `aws-cdk-lib` land in stage 3.
+ * TODO: Add AWS CDK stacks and `aws-cdk-lib`.
  * Package exists so the monorepo layout matches the architecture docs.
  */
 export const INFRA_PLACEHOLDER = "lghs-infra";

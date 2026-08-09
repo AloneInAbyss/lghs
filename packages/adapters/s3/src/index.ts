@@ -1,4 +1,4 @@
 /**
- * S3 adapter for `SaveStorage` — implemented in stage 2.
+ * TODO: Implement S3 adapter for `SaveStorage`.
  */
 export {};

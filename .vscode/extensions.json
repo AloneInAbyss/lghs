@@ -6,6 +6,7 @@
         "dracula-theme.theme-dracula",
         "johnpapa.vscode-peacock",
         "vscode-icons-team.vscode-icons",
-        "vitest.explorer"
+        "vitest.explorer",
+        "fanaticpythoner.better-todo-tree"
     ]
 }
