@@ -1,12 +1,12 @@
 {
-    "recommendations": [
-        "mhutchie.git-graph",
-        "rvest.vs-code-prettier-eslint",
-        "pflannery.vscode-versionlens",
-        "dracula-theme.theme-dracula",
-        "johnpapa.vscode-peacock",
-        "vscode-icons-team.vscode-icons",
-        "vitest.explorer",
-        "fanaticpythoner.better-todo-tree"
-    ]
+  "recommendations": [
+    "mhutchie.git-graph",
+    "rvest.vs-code-prettier-eslint",
+    "pflannery.vscode-versionlens",
+    "dracula-theme.theme-dracula",
+    "johnpapa.vscode-peacock",
+    "vscode-icons-team.vscode-icons",
+    "vitest.explorer",
+    "fanaticpythoner.better-todo-tree"
+  ]
 }
