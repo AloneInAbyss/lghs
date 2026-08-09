@@ -29,7 +29,7 @@ Progresso e escopo do MVP: [`CHECKLIST.md`](CHECKLIST.md).
 
 ## Desenvolvimento
 
-Requisitos: Node.js 22+ e [pnpm](https://pnpm.io/).
+Requisitos: Node.js e [pnpm](https://pnpm.io/).
 
 ```bash
 pnpm install
