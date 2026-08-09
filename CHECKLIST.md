@@ -68,7 +68,7 @@ Monorepo e domínio testável sem AWS/Discord.
 
 Comandos operacionais ponta a ponta (ainda podendo desenvolver use cases com fakes antes dos adapters AWS).
 
-- [ ] Use cases de `/start`, `/stop`, `/status` no núcleo (orquestração + pré-condições)
+- [x] Use cases de `/start`, `/stop`, `/status` no núcleo (orquestração + pré-condições)
 - [ ] `StateStore` em DynamoDB
 - [ ] Discord bot (discord.js) com deferred reply / follow-up + ACL por role
 - [ ] `ServerProvider` mínimo (EC2 RunInstances / TerminateInstances)
