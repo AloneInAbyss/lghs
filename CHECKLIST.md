@@ -68,14 +68,14 @@ Monorepo e domínio testável sem AWS/Discord.
 
 Comandos operacionais ponta a ponta (ainda podendo desenvolver use cases com fakes antes dos adapters AWS).
 
-- [ ] Use cases de `/start`, `/stop`, `/status` no núcleo (orquestração + pré-condições)
-- [ ] `StateStore` em DynamoDB
-- [ ] Discord bot (discord.js) com deferred reply / follow-up + ACL por role
-- [ ] `ServerProvider` mínimo (EC2 RunInstances / TerminateInstances)
-- [ ] Minecraft adapter (start/stop/health + paths de save; RCON)
-- [ ] `SaveStorage` (S3) no ciclo start/stop
-- [ ] `/start`, `/stop`, `/status` operacionais ponta a ponta
-- [ ] Cobertura nos packages com implementação real (além do core), ainda sem gate rígido de CI
+- [x] Use cases de `/start`, `/stop`, `/status` no núcleo (orquestração + pré-condições)
+- [x] `StateStore` em DynamoDB
+- [x] Discord bot (discord.js) com deferred reply / follow-up + ACL por role
+- [x] `ServerProvider` mínimo (EC2 RunInstances / TerminateInstances)
+- [x] Minecraft adapter (start/stop/health + paths de save; RCON)
+- [x] `SaveStorage` (S3) no ciclo start/stop
+- [x] `/start`, `/stop`, `/status` operacionais ponta a ponta (wiring do control-plane + `.env.example`)
+- [x] Cobertura nos packages com implementação real (além do core), ainda sem gate rígido de CI
 
 ### 3 — Operação
 

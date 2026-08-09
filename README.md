@@ -39,4 +39,11 @@ pnpm lint
 pnpm typecheck
 ```
 
+Variáveis de ambiente: copie [`.env.example`](.env.example). Subir o Control Plane (requer Discord + AWS configurados):
+
+```bash
+pnpm --filter @lghs/control-plane build
+pnpm --filter @lghs/control-plane start
+```
+
 Monorepo: `apps/control-plane`, `packages/core`, `packages/adapters/*`, `infra`.

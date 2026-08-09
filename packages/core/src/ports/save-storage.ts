@@ -1,14 +1,23 @@
+/** Where game saves live on the runtime (used for remote sync on stop/start). */
+export interface SaveSyncContext {
+  runtimeId: string;
+  workingDirectory: string;
+}
+
 /** Upload/download game saves and configs between sessions. */
 export interface SaveStorage {
   /**
-   * Download previously stored objects for `gameId` into the runtime working tree.
-   * Paths are relative (as declared by `GameAdapter.savePaths()`).
+   * Restore objects for `gameId` onto the runtime.
+   * EC2 bootstrap may also restore via user-data; this remains for explicit sync providers.
    */
-  download(gameId: string, relativePaths: readonly string[]): Promise<void>;
+  download(
+    gameId: string,
+    relativePaths: readonly string[],
+    context: SaveSyncContext,
+  ): Promise<void>;
 
   /**
-   * Upload current objects for `gameId` from the runtime working tree.
-   * Paths are relative (as declared by `GameAdapter.savePaths()`).
+   * Persist objects for `gameId` from the runtime (e.g. SSM + S3 after flush).
    */
-  upload(gameId: string, relativePaths: readonly string[]): Promise<void>;
+  upload(gameId: string, relativePaths: readonly string[], context: SaveSyncContext): Promise<void>;
 }

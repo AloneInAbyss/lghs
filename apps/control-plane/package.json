@@ -15,10 +15,16 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "start": "node dist/main.js"
   },
   "dependencies": {
+    "@lghs/adapter-discord": "workspace:*",
+    "@lghs/adapter-dynamodb": "workspace:*",
+    "@lghs/adapter-ec2": "workspace:*",
+    "@lghs/adapter-minecraft": "workspace:*",
+    "@lghs/adapter-s3": "workspace:*",
     "@lghs/core": "workspace:*"
   }
 }

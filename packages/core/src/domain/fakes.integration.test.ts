@@ -24,7 +24,11 @@ describe("in-memory fakes with lifecycle", () => {
 
     const plan = game.bootstrapPlan({ restoreSave: true });
     const runtime = await provider.start(plan);
-    await saves.download(game.id, game.savePaths());
+    const sync = {
+      runtimeId: runtime.runtimeId,
+      workingDirectory: plan.workingDirectory,
+    };
+    await saves.download(game.id, game.savePaths(), sync);
 
     const session = await game.connect({
       runtimeId: runtime.runtimeId,
@@ -51,7 +55,7 @@ describe("in-memory fakes with lifecycle", () => {
 
     await session.flush();
     await session.shutdown();
-    await saves.upload(game.id, game.savePaths());
+    await saves.upload(game.id, game.savePaths(), sync);
     await provider.terminate(runtime.runtimeId);
 
     state = transition(state, {

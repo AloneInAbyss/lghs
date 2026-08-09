@@ -1,10 +1,14 @@
-import type { SaveStorage } from "../ports/save-storage.js";
+import type { SaveStorage, SaveSyncContext } from "../ports/save-storage.js";
 
 /** In-memory `SaveStorage` keyed by gameId + relative path. */
 export class InMemorySaveStorage implements SaveStorage {
   private readonly objects = new Map<string, Uint8Array>();
 
-  async download(gameId: string, relativePaths: readonly string[]): Promise<void> {
+  async download(
+    gameId: string,
+    relativePaths: readonly string[],
+    _context: SaveSyncContext,
+  ): Promise<void> {
     for (const path of relativePaths) {
       const key = this.key(gameId, path);
       if (!this.objects.has(key)) {
@@ -14,7 +18,11 @@ export class InMemorySaveStorage implements SaveStorage {
     }
   }
 
-  async upload(gameId: string, relativePaths: readonly string[]): Promise<void> {
+  async upload(
+    gameId: string,
+    relativePaths: readonly string[],
+    _context: SaveSyncContext,
+  ): Promise<void> {
     for (const path of relativePaths) {
       this.objects.set(this.key(gameId, path), new TextEncoder().encode(`save:${gameId}:${path}`));
     }

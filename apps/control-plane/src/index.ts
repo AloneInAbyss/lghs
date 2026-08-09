@@ -1,6 +1,2 @@
-/**
- * TODO: Wire Control Plane entry (Discord + ports).
- */
-export function placeholder(): string {
-  return "lghs-control-plane";
-}
+export { loadConfig, type ControlPlaneConfig } from "./config.js";
+export { createAppDeps, createDiscordBot } from "./wiring.js";

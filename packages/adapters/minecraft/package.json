@@ -15,9 +15,12 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@lghs/core": "workspace:*"
+    "@lghs/core": "workspace:*",
+    "rcon-client": "^4.2.5"
   }
 }

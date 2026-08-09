@@ -176,10 +176,12 @@ O restore não pode ocorrer antes do passo 5: não há disco/alvo de cópia enqu
 1. Usuário admin executa `/stop` (pré-condição: `running` ou `error`)
 2. Estado → `stopping`
 3. Com runtime ativo: `GameSession.flush` e em seguida `GameSession.shutdown`
-4. Upload dos `savePaths` através do `SaveStorage`
+4. Upload dos `savePaths` através do `SaveStorage` (sync remoto a partir do runtime via SSM + S3)
 5. `ServerProvider` termina o runtime (EC2 `TerminateInstances`)
 6. Estado → `stopped`
 7. Em falha: estado → `error`
+
+O restore no start ocorre no **bootstrap** da instância (`bootstrapPlan.restoreSave` → user-data / `aws s3 sync`). O Control Plane chama `SaveStorage.upload` no stop com contexto `{ runtimeId, workingDirectory }`.
 
 ## Contrato do `GameAdapter`
 
@@ -217,7 +219,7 @@ Detalhes de escaping/serialização ficam no adapter EC2. Timeouts de health fic
 | Responsabilidade | Dono |
 | --- | --- |
 | `RunInstances` / `TerminateInstances`, SG, IP | `ServerProvider` |
-| Upload/download S3 dos `savePaths()` | `SaveStorage` (acionado no bootstrap e no stop) |
+| Upload/download S3 dos `savePaths()` | `SaveStorage` (restore no bootstrap/user-data; upload no stop via SSM) |
 | Conteúdo do bootstrap (install, binário, start) | `bootstrapPlan()` do `GameAdapter` |
 | Health / flush / shutdown / players | `GameSession` do `GameAdapter` |
 | Mutex e máquina de estados | Control Plane + `StateStore` |

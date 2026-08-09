@@ -6,5 +6,13 @@
     "composite": true
   },
   "include": ["src/**/*.ts"],
-  "references": [{ "path": "../../packages/core/tsconfig.build.json" }]
+  "exclude": ["src/**/*.test.ts"],
+  "references": [
+    { "path": "../../packages/core/tsconfig.build.json" },
+    { "path": "../../packages/adapters/discord" },
+    { "path": "../../packages/adapters/dynamodb" },
+    { "path": "../../packages/adapters/ec2" },
+    { "path": "../../packages/adapters/s3" },
+    { "path": "../../packages/adapters/minecraft" }
+  ]
 }

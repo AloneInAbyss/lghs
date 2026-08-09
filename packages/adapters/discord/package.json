@@ -15,9 +15,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@lghs/core": "workspace:*"
+    "@lghs/core": "workspace:*",
+    "discord.js": "^14.27.0"
   }
 }
