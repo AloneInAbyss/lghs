@@ -34,6 +34,7 @@ Requisitos: Node.js e [pnpm](https://pnpm.io/).
 ```bash
 pnpm install
 pnpm test
+pnpm test:coverage
 pnpm lint
 pnpm typecheck
 ```
