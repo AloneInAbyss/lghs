@@ -5,3 +5,4 @@ packages:
   - "infra"
 allowBuilds:
   esbuild: true
+minimumReleaseAge: 0
