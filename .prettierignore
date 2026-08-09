@@ -1,0 +1,7 @@
+pnpm-lock.yaml
+docs/
+LICENSE
+CHECKLIST.md
+AGENTS.md
+**/dist/**
+coverage/

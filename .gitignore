@@ -1,1 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+coverage/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+credentials.json
+
+# AWS / CDK
+cdk.out/
+.cdk.staging/
+*.cdk.context.json
+
+# Logs & OS
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
+
+# IDE / tooling
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+.eslintcache
+
+# Markdown lint local config (optional)
 .markdownlint.json

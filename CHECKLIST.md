@@ -40,11 +40,11 @@ Itens para discutir e pendentes de resolução.
 
 ### 1 — Esqueleto do repositório
 
-- [ ] Estrutura de packages (`apps/control-plane`, `packages/core`, `packages/adapters/*`, `infra` com CDK)
-- [ ] TypeScript strict, lint/format
-- [ ] Popular `.gitignore` para Node/AWS/secrets
-- [ ] Fakes in-memory dos ports
-- [ ] Testes de domínio da máquina de estados (sem AWS)
+- [x] Estrutura de packages (`apps/control-plane`, `packages/core`, `packages/adapters/*`, `infra` com CDK)
+- [x] TypeScript strict, lint/format
+- [x] Popular `.gitignore` para Node/AWS/secrets
+- [x] Fakes in-memory dos ports
+- [x] Testes de domínio da máquina de estados (sem AWS)
 
 ### 2 — Vertical slice
 
