@@ -14,6 +14,7 @@ Em mudanças amplas, leia na ordem abaixo. Em edits locais e pequenos, leia só 
 6. [`docs/decisions.md`](docs/decisions.md)
 7. [`docs/risks.md`](docs/risks.md)
 8. [`docs/glossary.md`](docs/glossary.md)
+9. [`docs/deploy.md`](docs/deploy.md) e [`docs/smoke-test.md`](docs/smoke-test.md) em mudanças de operação/deploy
 
 ## Regras de engenharia
 

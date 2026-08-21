@@ -18,6 +18,8 @@ Progresso e escopo do MVP: [`CHECKLIST.md`](CHECKLIST.md).
 | [Riscos](docs/risks.md)             | Riscos analisados e mitigações      |
 | [Decisões](docs/decisions.md)       | Decisões de arquitetura (ADRs)      |
 | [Comandos](docs/commands.md)        | Documentação de comandos do Discord |
+| [Deploy](docs/deploy.md)            | CDK, ECR, Fargate e secrets         |
+| [Smoke test](docs/smoke-test.md)    | Validação manual pós-deploy         |
 
 ## Comandos no Discord
 
@@ -29,7 +31,7 @@ Progresso e escopo do MVP: [`CHECKLIST.md`](CHECKLIST.md).
 
 ## Desenvolvimento
 
-Requisitos: Node.js e [pnpm](https://pnpm.io/).
+Requisitos: Node.js 24+ e [pnpm](https://pnpm.io/).
 
 ```bash
 pnpm install
@@ -39,7 +41,7 @@ pnpm lint
 pnpm typecheck
 ```
 
-Variáveis de ambiente: copie [`.env.example`](.env.example). Subir o Control Plane (requer Discord + AWS configurados):
+Variáveis locais: [`.env.example`](.env.example). Deploy na AWS: [`docs/deploy.md`](docs/deploy.md).
 
 ```bash
 pnpm --filter @lghs/control-plane build

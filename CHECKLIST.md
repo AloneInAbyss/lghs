@@ -79,7 +79,7 @@ Comandos operacionais ponta a ponta (ainda podendo desenvolver use cases com fak
 
 ### 3 — Operação
 
-- [ ] IaC da conta (AWS CDK em `infra/`)
-- [ ] Runbook de deploy (imagem ECR + serviço Fargate)
-- [ ] Alarmes / alertas Discord
-- [ ] Smoke test documentado
+- [x] IaC da conta (AWS CDK em `infra/`)
+- [x] Runbook de deploy (imagem ECR + serviço Fargate) — [`docs/deploy.md`](docs/deploy.md)
+- [x] Alarmes / alertas Discord (CloudWatch → SNS → Lambda → webhook)
+- [x] Smoke test documentado — [`docs/smoke-test.md`](docs/smoke-test.md)
