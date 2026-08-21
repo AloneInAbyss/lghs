@@ -1,0 +1,4 @@
+{
+  "name": "LGHS",
+  "install": "pnpm install --frozen-lockfile && pnpm build"
+}
